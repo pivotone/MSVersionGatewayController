@@ -1,34 +1,39 @@
 package com.example.msversiongatewaycontroller.model;
 
 public class MServiceInterface {
-    private String MServiceId;
-    private String PatternUrl;
-    private String Description;
+    private Integer mServiceId;
+    private String patternUrl;
+    private String description;
     private String functionName;
+    private String requestType;
 
-    public String getMServiceId() {
-        return MServiceId;
+    public Integer getMServiceId() {
+        return mServiceId;
     }
 
-    public void setMServiceId(String MServiceId) {
-        this.MServiceId = MServiceId;
+    public void setMServiceId(Integer mServiceId) {
+        this.mServiceId = mServiceId;
     }
 
     public String getPatternUrl() {
-        return PatternUrl;
+        return patternUrl;
     }
 
     public void setPatternUrl(String patternUrl) {
-        PatternUrl = patternUrl;
+        this.patternUrl = patternUrl;
     }
 
     public String getDescription() {
-        return Description;
+        return description;
     }
 
     public void setDescription(String description) {
-        Description = description;
+        this.description = description;
     }
+
+
+
+
 
     public String getFunctionName() {
         return functionName;
@@ -46,5 +51,5 @@ public class MServiceInterface {
         this.requestType = requestType;
     }
 
-    private String requestType;
+
 }
