@@ -1,6 +1,6 @@
 package com.example.msversiongatewaycontroller.service;
 
-import com.example.msversiongatewaycontroller.entity.SysRouteConf;
+import com.example.msversiongatewaycontroller.entity.MServiceDepDesc;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 /**
@@ -11,6 +11,6 @@ import com.baomidou.mybatisplus.extension.service.IService;
  * @author pivot
  * @since 2022-08-26
  */
-public interface SysRouteConfService extends IService<SysRouteConf> {
+public interface MServiceDepDescService extends IService<MServiceDepDesc> {
 
 }

@@ -1,37 +1,16 @@
 package com.example.msversiongatewaycontroller.model;
 
+import com.example.msversiongatewaycontroller.entity.MService;
+import com.example.msversiongatewaycontroller.entity.MServiceDepDesc;
+import com.example.msversiongatewaycontroller.entity.MServiceInterface;
+import com.example.msversiongatewaycontroller.entity.MServiceVersion;
+
 import java.util.Map;
 
-public class MService {
-    private MServiceVersion version;
-    private String mServiceName;
-    private String description;
+public class MServiceImpl extends MService {
     private Map<String, MServiceInterface> serviceInterfaceMap;
     private MServiceDepDesc mServiceDepDesc;
-
-    public MServiceVersion getVersion() {
-        return version;
-    }
-
-    public void setVersion(MServiceVersion version) {
-        this.version = version;
-    }
-
-    public String getMServiceName() {
-        return mServiceName;
-    }
-
-    public void setMServiceName(String MServiceName) {
-        this.mServiceName = MServiceName;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
+    private MServiceVersion version;
 
     public Map<String, MServiceInterface> getServiceInterfaceMap() {
         return serviceInterfaceMap;
@@ -47,5 +26,13 @@ public class MService {
 
     public void setmServiceDepDesc(MServiceDepDesc mServiceDepDesc) {
         this.mServiceDepDesc = mServiceDepDesc;
+    }
+
+    public MServiceVersion getVersion() {
+        return version;
+    }
+
+    public void setVersion(MServiceVersion version) {
+        this.version = version;
     }
 }
