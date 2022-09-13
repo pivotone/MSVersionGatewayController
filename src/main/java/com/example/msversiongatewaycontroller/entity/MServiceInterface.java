@@ -13,7 +13,7 @@ import io.swagger.annotations.ApiModelProperty;
  * </p>
  *
  * @author pivot
- * @since 2022-08-26
+ * @since 2022-09-12
  */
 @TableName("m_service_interface")
 @ApiModel(value = "MServiceInterface对象", description = "")
@@ -33,6 +33,8 @@ public class MServiceInterface implements Serializable {
 
     @TableId(value = "id", type = IdType.AUTO)
     private Integer id;
+
+    private Integer versionId;
 
     public Integer getServiceId() {
         return serviceId;
@@ -76,6 +78,13 @@ public class MServiceInterface implements Serializable {
     public void setId(Integer id) {
         this.id = id;
     }
+    public Integer getVersionId() {
+        return versionId;
+    }
+
+    public void setVersionId(Integer versionId) {
+        this.versionId = versionId;
+    }
 
     @Override
     public String toString() {
@@ -86,6 +95,7 @@ public class MServiceInterface implements Serializable {
             ", functionName=" + functionName +
             ", requestType=" + requestType +
             ", id=" + id +
+            ", versionId=" + versionId +
         "}";
     }
 }

@@ -7,7 +7,6 @@ import java.io.Serializable;
 import java.sql.Blob;
 import java.time.LocalDateTime;
 import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
 
 /**
  * <p>
@@ -15,7 +14,7 @@ import io.swagger.annotations.ApiModelProperty;
  * </p>
  *
  * @author pivot
- * @since 2022-08-26
+ * @since 2022-09-12
  */
 @TableName("sys_route_conf")
 @ApiModel(value = "SysRouteConf对象", description = "")
@@ -28,9 +27,9 @@ public class SysRouteConf implements Serializable {
 
     private String routeId;
 
-    private byte[] predicates;
+    private Blob predicates;
 
-    private byte[] filters;
+    private Blob filters;
 
     private String uri;
 
@@ -56,14 +55,14 @@ public class SysRouteConf implements Serializable {
     public void setRouteId(String routeId) {
         this.routeId = routeId;
     }
-    public byte[] getPredicates() {
+    public Blob getPredicates() {
         return predicates;
     }
 
     public void setPredicates(byte[] predicates) {
         this.predicates = predicates;
     }
-    public byte[] getFilters() {
+    public Blob getFilters() {
         return filters;
     }
 

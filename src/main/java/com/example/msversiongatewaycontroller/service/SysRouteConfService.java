@@ -3,7 +3,6 @@ package com.example.msversiongatewaycontroller.service;
 import com.alibaba.fastjson.JSONArray;
 import com.example.msversiongatewaycontroller.entity.SysRouteConf;
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.mysql.cj.xdevapi.JsonArray;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
@@ -14,7 +13,7 @@ import java.util.List;
  * </p>
  *
  * @author pivot
- * @since 2022-08-26
+ * @since 2022-09-12
  */
 public interface SysRouteConfService extends IService<SysRouteConf> {
 

@@ -11,7 +11,7 @@ import io.swagger.annotations.ApiModelProperty;
  * </p>
  *
  * @author pivot
- * @since 2022-08-26
+ * @since 2022-09-12
  */
 @TableName("m_service_version")
 @ApiModel(value = "MServiceVersion对象", description = "")
@@ -26,6 +26,8 @@ public class MServiceVersion implements Serializable {
     private Integer patchVersionNumber;
 
     private Integer serviceId;
+
+    private Integer versionId;
 
     public Integer getMajorVersionNumber() {
         return majorVersionNumber;
@@ -55,6 +57,13 @@ public class MServiceVersion implements Serializable {
     public void setServiceId(Integer serviceId) {
         this.serviceId = serviceId;
     }
+    public Integer getVersionId() {
+        return versionId;
+    }
+
+    public void setVersionId(Integer versionId) {
+        this.versionId = versionId;
+    }
 
     @Override
     public String toString() {
@@ -63,6 +72,7 @@ public class MServiceVersion implements Serializable {
             ", minorVersionNumber=" + minorVersionNumber +
             ", patchVersionNumber=" + patchVersionNumber +
             ", serviceId=" + serviceId +
+            ", versionId=" + versionId +
         "}";
     }
 }

@@ -10,7 +10,7 @@ import org.apache.ibatis.annotations.Mapper;
  * </p>
  *
  * @author pivot
- * @since 2022-08-26
+ * @since 2022-09-12
  */
 @Mapper
 public interface MServiceDependencyMapper extends BaseMapper<MServiceDependency> {

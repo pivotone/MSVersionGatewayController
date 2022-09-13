@@ -33,7 +33,7 @@ import java.util.stream.Collectors;
  * </p>
  *
  * @author pivot
- * @since 2022-08-26
+ * @since 2022-09-12
  */
 @Service
 @AllArgsConstructor
@@ -97,22 +97,24 @@ public class SysRouteConfServiceImpl extends ServiceImpl<SysRouteConfMapper, Sys
             routeDefinitionList.add(definition);
         });
 
+        // 待修改，是直接保存数据库，还是应该由redis设置定时任务来保存
         SysRouteConf conf = new SysRouteConf();
         conf.setDelFlag(STATUS_NORMAL);
         this.remove(new QueryWrapper<>(conf));
 
         List<SysRouteConf> routeConfList = routeDefinitionList.stream().map(definition -> {
-           SysRouteConf routeConf = new SysRouteConf();
-           routeConf.setRouteId(definition.getId());
-           routeConf.setFilters(ToByte(definition.getFilters()));
-           routeConf.setPredicates(ToByte(definition.getPredicates()));
-           routeConf.setOrder(definition.getOrder());
-           routeConf.setUri(definition.getUri().toString());
-           return routeConf;
+            SysRouteConf routeConf = new SysRouteConf();
+            routeConf.setRouteId(definition.getId());
+            routeConf.setFilters(ToByte(definition.getFilters()));
+            routeConf.setPredicates(ToByte(definition.getPredicates()));
+            routeConf.setOrder(definition.getOrder());
+            routeConf.setUri(definition.getUri().toString());
+            return routeConf;
         }).collect(Collectors.toList());
         this.updateBatchById(routeConfList);
         log.info("update over");
 
+        // 添加发布事件，提醒服务去更改信息
         this.applicationEventPublisher.publishEvent(new RefreshRoutesEvent(this));
         return Mono.empty();
     }
