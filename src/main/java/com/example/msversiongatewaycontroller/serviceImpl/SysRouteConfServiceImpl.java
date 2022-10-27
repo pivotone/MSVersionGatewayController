@@ -105,8 +105,8 @@ public class SysRouteConfServiceImpl extends ServiceImpl<SysRouteConfMapper, Sys
         List<SysRouteConf> routeConfList = routeDefinitionList.stream().map(definition -> {
             SysRouteConf routeConf = new SysRouteConf();
             routeConf.setRouteId(definition.getId());
-            routeConf.setFilters(ToByte(definition.getFilters()));
-            routeConf.setPredicates(ToByte(definition.getPredicates()));
+            routeConf.setFilters(definition.getFilters().toString());
+            routeConf.setPredicates(definition.getPredicates().toString());
             routeConf.setOrder(definition.getOrder());
             routeConf.setUri(definition.getUri().toString());
             return routeConf;

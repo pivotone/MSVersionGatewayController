@@ -27,9 +27,9 @@ public class SysRouteConf implements Serializable {
 
     private String routeId;
 
-    private Blob predicates;
+    private String predicates;
 
-    private Blob filters;
+    private String filters;
 
     private String uri;
 
@@ -55,18 +55,18 @@ public class SysRouteConf implements Serializable {
     public void setRouteId(String routeId) {
         this.routeId = routeId;
     }
-    public Blob getPredicates() {
+    public String getPredicates() {
         return predicates;
     }
 
-    public void setPredicates(byte[] predicates) {
+    public void setPredicates(String predicates) {
         this.predicates = predicates;
     }
-    public Blob getFilters() {
+    public String getFilters() {
         return filters;
     }
 
-    public void setFilters(byte[] filters) {
+    public void setFilters(String filters) {
         this.filters = filters;
     }
     public String getUri() {

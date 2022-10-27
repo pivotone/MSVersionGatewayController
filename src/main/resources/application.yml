@@ -1,4 +1,6 @@
 spring:
+  application:
+    name: version-gateway
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     username: root
@@ -7,5 +9,19 @@ spring:
   redis:
     host: 127.0.0.1
     port: 6379
+  cloud:
+    gateway:
+      routes:
+        - id: route
+          order: 0
+          uri: lb://service
+          predicates:
+            - Path=/service/**
+    nacos:
+      discovery:
+        server-addr: 39.104.112.98:8848
+        namespace: public
+        username: nacos
+        password: nacos
 server:
   port: 5775
