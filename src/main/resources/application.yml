@@ -1,11 +1,16 @@
 spring:
   application:
     name: version-gateway
+#  datasource:
+#    driver-class-name: com.mysql.cj.jdbc.Driver
+#    username: root
+#    password: Hsm1@138
+#    url: jdbc:mysql://localhost:3306/MSversion
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     username: root
-    password: Hsm1@138
-    url: jdbc:mysql://localhost:3306/MSversion
+    password: houshengming
+    url: jdbc:mysql://39.104.112.98:5775/MSversion
   redis:
     host: 127.0.0.1
     port: 6379
@@ -24,4 +29,4 @@ spring:
         username: nacos
         password: nacos
 server:
-  port: 5775
+  port: 5678
