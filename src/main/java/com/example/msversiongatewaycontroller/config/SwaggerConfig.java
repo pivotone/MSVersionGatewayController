@@ -35,12 +35,12 @@ public class SwaggerConfig {
     }
 
     private ApiInfo apiInfo() {
-        Contact contact = new Contact("Hou ShengMing", "http://localhost", "18865290907@163.com");
+        Contact contact = new Contact("Hou ShengMing", "https://github.com/pivotone", "18865290907@163.com");
         return new ApiInfo(
                 title,
                 title + " api description",
                 info.getVersion(),
-                "http://localhost",
+                "http://localhost:8848",
                 contact,
                 "Apache2.0",
                 "http://www.apache.org/licenses/LICENSE-2.0",

@@ -28,6 +28,8 @@ public class MService implements Serializable {
     @TableId(value = "service_id", type = IdType.AUTO)
     private Integer serviceId;
 
+    private Integer health;
+
     public String getmServiceName() {
         return mServiceName;
     }
@@ -57,5 +59,13 @@ public class MService implements Serializable {
             ", description=" + description +
             ", serviceId=" + serviceId +
         "}";
+    }
+
+    public Integer getHealth() {
+        return health;
+    }
+
+    public void setHealth(Integer health) {
+        this.health = health;
     }
 }

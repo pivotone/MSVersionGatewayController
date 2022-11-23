@@ -21,7 +21,6 @@ public class MServiceInterface implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    private Integer serviceId;
 
     private String patternUrl;
 
@@ -36,13 +35,6 @@ public class MServiceInterface implements Serializable {
 
     private Integer versionId;
 
-    public Integer getServiceId() {
-        return serviceId;
-    }
-
-    public void setServiceId(Integer serviceId) {
-        this.serviceId = serviceId;
-    }
     public String getPatternUrl() {
         return patternUrl;
     }
@@ -89,7 +81,6 @@ public class MServiceInterface implements Serializable {
     @Override
     public String toString() {
         return "MServiceInterface{" +
-            "serviceId=" + serviceId +
             ", patternUrl=" + patternUrl +
             ", description=" + description +
             ", functionName=" + functionName +
