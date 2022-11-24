@@ -12,8 +12,8 @@ spring:
     password: houshengming
     url: jdbc:mysql://39.104.112.98:5775/MSversion
   redis:
-    host: 127.0.0.1
-    port: 6379
+    host: 39.104.112.98
+    port: 6463
   cloud:
     gateway:
       routes:

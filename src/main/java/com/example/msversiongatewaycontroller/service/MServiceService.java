@@ -13,4 +13,5 @@ import com.baomidou.mybatisplus.extension.service.IService;
  */
 public interface MServiceService extends IService<MService> {
 
+    MService selectByServiceName(MService service);
 }

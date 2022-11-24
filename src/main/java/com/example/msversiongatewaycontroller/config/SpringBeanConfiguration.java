@@ -31,7 +31,7 @@ public class SpringBeanConfiguration {
     @Bean
     ReactorLoadBalancer<ServiceInstance> versionLoadBalancer(Environment environment,
                                                              LoadBalancerClientFactory clientFactory) {
-        String name = environment.getProperty(clientFactory.PROPERTY_NAME);
+        String name = environment.getProperty(LoadBalancerClientFactory.PROPERTY_NAME);
         return new VersionLoadBalancerRule(properties, name,
                 clientFactory.getLazyProvider(name, ServiceInstanceListSupplier.class));
     }

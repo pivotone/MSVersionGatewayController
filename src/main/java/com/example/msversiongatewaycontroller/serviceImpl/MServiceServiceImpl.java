@@ -6,6 +6,8 @@ import com.example.msversiongatewaycontroller.service.MServiceService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
+
 /**
  * <p>
  *  服务实现类
@@ -17,4 +19,11 @@ import org.springframework.stereotype.Service;
 @Service
 public class MServiceServiceImpl extends ServiceImpl<MServiceMapper, MService> implements MServiceService {
 
+    @Resource
+    MServiceMapper serviceMapper;
+
+    @Override
+    public MService selectByServiceName(MService service) {
+        return serviceMapper.selectByServiceName(service.getmServiceName());
+    }
 }

@@ -1,5 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.example.msversiongatewaycontroller.mapper.MServiceVersionMapper">
-
+    <select id="selectByVersionAndService" resultType="com.example.msversiongatewaycontroller.entity.MServiceVersion" parameterType="map">
+        select * from m_service_version
+          where service_id = #{serviceId}
+            and major_version_number = #{majorVersionNumber}
+            and minor_version_number = #{minorVersionNumber}
+            and patch_version_number = #{patchVersionNumber}
+    </select>
 </mapper>

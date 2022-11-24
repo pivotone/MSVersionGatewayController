@@ -7,6 +7,11 @@ import com.alibaba.nacos.api.naming.NamingService;
 import com.alibaba.nacos.api.naming.listener.AbstractEventListener;
 import com.alibaba.nacos.api.naming.listener.Event;
 import com.alibaba.nacos.api.naming.listener.NamingEvent;
+import com.alibaba.nacos.api.naming.pojo.Instance;
+import com.example.msversiongatewaycontroller.entity.MService;
+import com.example.msversiongatewaycontroller.entity.MServiceVersion;
+import com.example.msversiongatewaycontroller.service.MServiceService;
+import com.example.msversiongatewaycontroller.service.MServiceVersionService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cloud.client.discovery.DiscoveryClient;
@@ -27,6 +32,12 @@ public class ServiceGetTask {
 
     @Resource
     private DiscoveryClient client;
+
+    @Resource
+    MServiceService serviceService;
+
+    @Resource
+    MServiceVersionService versionService;
 
     @Resource
     private NacosDiscoveryProperties nacosDiscoveryProperties;
@@ -68,6 +79,31 @@ public class ServiceGetTask {
                 public void onEvent(Event event) {
                     LOGGER.info("订阅到的服务：" + ((NamingEvent) event).getServiceName());
                     LOGGER.info("订阅到的实例：" + ((NamingEvent) event).getInstances());
+                    MService service = new MService();
+                    service.setmServiceName(((NamingEvent) event).getServiceName());
+                    service.setDescription("A mirco service instance about " + service.getmServiceName());
+                    service.setHealth(1);
+                    MService tempService = serviceService.selectByServiceName(service);
+                    if(tempService == null) {
+                        serviceService.save(service);
+                        service = serviceService.selectByServiceName(service);
+                    } else {
+                        service = tempService;
+                    }
+                    int serviceId = service.getServiceId();
+                    LOGGER.info("获得的service id为：" + serviceId);
+                    List<Instance> instances = ((NamingEvent) event).getInstances();
+                    for(Instance instance : instances) {
+                        Map<String, String> map = instance.getMetadata();
+                        String version = map.get("version");
+                        String[] versions = version.split("\\.");
+                        MServiceVersion serviceVersion = new MServiceVersion(serviceId, Integer.parseInt(versions[0]),
+                                Integer.parseInt(versions[1]), Integer.parseInt(versions[2]));
+                        MServiceVersion tempServiceVersion = versionService.selectByVersionAndService(serviceVersion);
+                        if(tempServiceVersion == null) {
+                            versionService.save(serviceVersion);
+                        }
+                    }
                 }
             });
         }

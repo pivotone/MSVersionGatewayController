@@ -32,6 +32,17 @@ public class MServiceVersion implements Serializable {
     @TableId(value = "versionId", type = IdType.AUTO)
     private Integer versionId;
 
+    public MServiceVersion(){
+
+    }
+
+    public MServiceVersion(int serviceId, int majorVersionNumber, int minorVersionNumber, int patchVersionNumber) {
+        this.serviceId = serviceId;
+        this.majorVersionNumber = majorVersionNumber;
+        this.minorVersionNumber = minorVersionNumber;
+        this.patchVersionNumber = patchVersionNumber;
+    }
+
     public Integer getMajorVersionNumber() {
         return majorVersionNumber;
     }

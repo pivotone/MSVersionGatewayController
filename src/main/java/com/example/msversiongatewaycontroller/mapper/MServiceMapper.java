@@ -15,4 +15,6 @@ import org.apache.ibatis.annotations.Mapper;
 @Mapper
 public interface MServiceMapper extends BaseMapper<MService> {
 
+    MService selectByServiceName(String mServiceName);
+
 }

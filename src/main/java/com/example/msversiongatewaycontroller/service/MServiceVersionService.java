@@ -12,5 +12,5 @@ import com.baomidou.mybatisplus.extension.service.IService;
  * @since 2022-09-12
  */
 public interface MServiceVersionService extends IService<MServiceVersion> {
-
+    MServiceVersion selectByVersionAndService(MServiceVersion version);
 }

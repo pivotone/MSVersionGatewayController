@@ -32,7 +32,7 @@ public class VersionLoadBalancerRule implements ReactorServiceInstanceLoadBalanc
 
     private final String serviceId;
 
-    private ObjectProvider<ServiceInstanceListSupplier> serviceInstanceListSuppliers;
+    private final ObjectProvider<ServiceInstanceListSupplier> serviceInstanceListSuppliers;
 
     public VersionLoadBalancerRule(NacosDiscoveryProperties nacosDiscoveryProperties,
                                    String serviceId,
