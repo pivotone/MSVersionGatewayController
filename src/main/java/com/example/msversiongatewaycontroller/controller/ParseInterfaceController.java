@@ -1,11 +1,12 @@
 package com.example.msversiongatewaycontroller.controller;
 
 import com.example.msversiongatewaycontroller.entity.MService;
+import com.example.msversiongatewaycontroller.entity.MServiceInterface;
+import com.example.msversiongatewaycontroller.entity.MServiceVersion;
 import com.example.msversiongatewaycontroller.entity.Result;
-import com.example.msversiongatewaycontroller.serviceImpl.MServiceInterfaceServiceImpl;
+import com.example.msversiongatewaycontroller.service.MServiceInterfaceService;
+import com.example.msversiongatewaycontroller.service.MServiceVersionService;
 import com.example.msversiongatewaycontroller.serviceImpl.MServiceServiceImpl;
-import com.example.msversiongatewaycontroller.serviceImpl.MServiceVersionServiceImpl;
-import com.example.msversiongatewaycontroller.task.ServiceGetTask;
 import com.example.msversiongatewaycontroller.utils.ResultUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -40,10 +41,10 @@ public class ParseInterfaceController {
     MServiceServiceImpl mServiceService;
 
     @Resource
-    MServiceVersionServiceImpl mServiceVersionService;
+    MServiceVersionService mServiceVersionService;
 
     @Resource
-    MServiceInterfaceServiceImpl mServiceInterfaceService;
+    MServiceInterfaceService mServiceInterfaceService;
 
     @Resource
     ThreadPoolTaskExecutor threadPoolTaskExecutor;
@@ -73,6 +74,19 @@ public class ParseInterfaceController {
         JsonNode info = node.get("info");
         MService service = new MService();
         service.setmServiceName(info.get("title").toString());
+        service = mServiceService.selectByServiceName(service);
+        if(service == null) {
+            return;
+        }
+        int serviceId = service.getServiceId();
+        String[] versions = info.get("version").toString().split("\\.");
+        MServiceVersion serviceVersion = new MServiceVersion(serviceId, Integer.parseInt(versions[0]),
+                Integer.parseInt(versions[1]), Integer.parseInt(versions[2]));
+        serviceVersion = mServiceVersionService.selectByVersionAndService(serviceVersion);
+        if(serviceVersion == null){
+            return;
+        }
+        int versionId = serviceVersion.getVersionId();
         JsonNode paths = node.get("paths");
         Iterator<String> keys = paths.fieldNames();
         while(keys.hasNext()) {
@@ -82,9 +96,18 @@ public class ParseInterfaceController {
                 LOGGER.info("解析到的path路径为： " + path);
                 Iterator<String> methods = paths.get(path).fieldNames();
                 while(methods.hasNext()) {
+                    MServiceInterface serviceInterface = new MServiceInterface();
+                    serviceInterface.setApi(path);
                     String method = methods.next();
                     LOGGER.info("解析到的method为：" + method);
-                    LOGGER.info("解析到的method向前兼容为： " + pathNode.get(method).get("extensions").get("x-forward-compatible-marker").toString());
+                    LOGGER.info("解析到的method向前兼容为： " +
+                            pathNode.get(method).get("extensions").get("x-forward-compatible-marker").toString());
+                    serviceInterface.setRequestType(method);
+                    serviceInterface.setMarker(Integer.parseInt(
+                            pathNode.get(method).get("extensions").get("x-forward-compatible-marker").toString()
+                    ));
+                    serviceInterface.setDescription(
+                            pathNode.get(method).get("summary").toString());
                 }
             }));
         }

@@ -22,9 +22,11 @@ public class MServiceInterface implements Serializable {
     private static final long serialVersionUID = 1L;
 
 
-    private String patternUrl;
+    private String api;
 
     private String description;
+
+    private Integer marker;
 
     private String functionName;
 
@@ -35,12 +37,12 @@ public class MServiceInterface implements Serializable {
 
     private Integer versionId;
 
-    public String getPatternUrl() {
-        return patternUrl;
+    public String getApi() {
+        return api;
     }
 
-    public void setPatternUrl(String patternUrl) {
-        this.patternUrl = patternUrl;
+    public void setApi(String api) {
+        this.api = api;
     }
     public String getDescription() {
         return description;
@@ -81,12 +83,21 @@ public class MServiceInterface implements Serializable {
     @Override
     public String toString() {
         return "MServiceInterface{" +
-            ", patternUrl=" + patternUrl +
+            ", api=" + api +
             ", description=" + description +
             ", functionName=" + functionName +
             ", requestType=" + requestType +
             ", id=" + id +
+            ", forward-compatible-marker=" + marker +
             ", versionId=" + versionId +
         "}";
+    }
+
+    public Integer getMarker() {
+        return marker;
+    }
+
+    public void setMarker(Integer marker) {
+        this.marker = marker;
     }
 }

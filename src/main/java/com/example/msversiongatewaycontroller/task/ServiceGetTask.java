@@ -108,7 +108,6 @@ public class ServiceGetTask {
             });
         }
     }
-
     private void setFalse(List<String> serviceNameLists) {
         serviceMap.replaceAll((k, v) -> false);
         for(String name : serviceNameLists)
