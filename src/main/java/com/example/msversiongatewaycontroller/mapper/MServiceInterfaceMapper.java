@@ -14,5 +14,5 @@ import org.apache.ibatis.annotations.Mapper;
  */
 @Mapper
 public interface MServiceInterfaceMapper extends BaseMapper<MServiceInterface> {
-
+    MServiceInterface selectInterfaceByMethodAndApi(MServiceInterface serviceInterface);
 }

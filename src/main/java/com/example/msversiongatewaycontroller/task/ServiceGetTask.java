@@ -80,7 +80,9 @@ public class ServiceGetTask {
                     LOGGER.info("订阅到的服务：" + ((NamingEvent) event).getServiceName());
                     LOGGER.info("订阅到的实例：" + ((NamingEvent) event).getInstances());
                     MService service = new MService();
-                    service.setmServiceName(((NamingEvent) event).getServiceName());
+                    String name = ((NamingEvent) event).getServiceName();
+                    name = name.replaceAll("-v[0-9]*", "");
+                    service.setmServiceName(name);
                     service.setDescription("A mirco service instance about " + service.getmServiceName());
                     service.setHealth(1);
                     MService tempService = serviceService.selectByServiceName(service);

@@ -5,8 +5,8 @@ import com.example.msversiongatewaycontroller.entity.MServiceInterface;
 import com.example.msversiongatewaycontroller.entity.MServiceVersion;
 import com.example.msversiongatewaycontroller.entity.Result;
 import com.example.msversiongatewaycontroller.service.MServiceInterfaceService;
+import com.example.msversiongatewaycontroller.service.MServiceService;
 import com.example.msversiongatewaycontroller.service.MServiceVersionService;
-import com.example.msversiongatewaycontroller.serviceImpl.MServiceServiceImpl;
 import com.example.msversiongatewaycontroller.utils.ResultUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -38,7 +38,7 @@ public class ParseInterfaceController {
     private static final Logger LOGGER = LoggerFactory.getLogger(ParseInterfaceController.class);
 
     @Resource
-    MServiceServiceImpl mServiceService;
+    MServiceService mServiceService;
 
     @Resource
     MServiceVersionService mServiceVersionService;
@@ -62,10 +62,7 @@ public class ParseInterfaceController {
         Response response = client.newCall(request).execute();
         String docs = Objects.requireNonNull(response.body()).string();
         parseToDataBase(docs);
-        ObjectMapper mapper = new ObjectMapper();
-        JsonNode node = mapper.readTree(docs);
-        JsonNode paths = node.get("paths");
-        return ResultUtils.success(paths);
+        return ResultUtils.success();
     }
 
     private void parseToDataBase(String docs) throws JsonProcessingException, InterruptedException {
@@ -73,13 +70,15 @@ public class ParseInterfaceController {
         JsonNode node = mapper.readTree(docs);
         JsonNode info = node.get("info");
         MService service = new MService();
-        service.setmServiceName(info.get("title").toString());
+        service.setmServiceName(info.get("title").asText());
+        LOGGER.info("Service name is " + service.getmServiceName());
         service = mServiceService.selectByServiceName(service);
         if(service == null) {
             return;
         }
         int serviceId = service.getServiceId();
-        String[] versions = info.get("version").toString().split("\\.");
+        String[] versions = info.get("version").asText().split("\\.");
+        LOGGER.info(serviceId + " :" + versions[0] + " " + versions[1] + " " +versions[2]);
         MServiceVersion serviceVersion = new MServiceVersion(serviceId, Integer.parseInt(versions[0]),
                 Integer.parseInt(versions[1]), Integer.parseInt(versions[2]));
         serviceVersion = mServiceVersionService.selectByVersionAndService(serviceVersion);
@@ -98,16 +97,22 @@ public class ParseInterfaceController {
                 while(methods.hasNext()) {
                     MServiceInterface serviceInterface = new MServiceInterface();
                     serviceInterface.setApi(path);
+                    serviceInterface.setVersionId(versionId);
                     String method = methods.next();
                     LOGGER.info("解析到的method为：" + method);
                     LOGGER.info("解析到的method向前兼容为： " +
-                            pathNode.get(method).get("extensions").get("x-forward-compatible-marker").toString());
+                            pathNode.get(method).get("extensions").get("x-forward-compatible-marker").asText());
                     serviceInterface.setRequestType(method);
                     serviceInterface.setMarker(Integer.parseInt(
-                            pathNode.get(method).get("extensions").get("x-forward-compatible-marker").toString()
+                            pathNode.get(method).get("extensions").get("x-forward-compatible-marker").asText()
                     ));
                     serviceInterface.setDescription(
-                            pathNode.get(method).get("summary").toString());
+                            pathNode.get(method).get("summary").asText());
+                    MServiceInterface tempServiceInterface =
+                            mServiceInterfaceService.selectInterfaceByMethodAndApi(serviceInterface);
+                    if(tempServiceInterface == null) {
+                        mServiceInterfaceService.save(serviceInterface);
+                    }
                 }
             }));
         }

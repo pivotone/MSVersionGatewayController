@@ -20,9 +20,9 @@ class MServiceServiceTest {
     @Test
     void testSelectByServiceName() {
         MService service = new MService();
-        service.setmServiceName("test");
+        service.setmServiceName("service");
         service = serviceService.selectByServiceName(service);
         LOGGER.info("获取到的serviceId为：" + service.getServiceId());
-        assert service.getServiceId() == 1;
+        assert service.getServiceId() == 3;
     }
 }
