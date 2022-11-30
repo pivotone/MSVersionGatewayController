@@ -30,7 +30,7 @@ public class MyBatisPlusConfig {
                             .pathInfo(Collections.singletonMap(OutputFile.xml, System.getProperty("user.dir") + "/src/main/resources/mapper"));
                 })
                 .strategyConfig(builder -> {
-                    builder.addInclude("m_service", "service_version_interface", "m_service_interface", "m_service_version")
+                    builder.addInclude("version_marker")
                             .serviceBuilder()
                             .formatServiceFileName("%sService")
                             .formatServiceImplFileName("%sServiceImpl")
