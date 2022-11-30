@@ -26,7 +26,7 @@ public class MServiceInterface implements Serializable {
 
     private String description;
 
-    private Integer marker;
+    private int marker;
 
     private String functionName;
 
@@ -93,11 +93,11 @@ public class MServiceInterface implements Serializable {
         "}";
     }
 
-    public Integer getMarker() {
+    public int getMarker() {
         return marker;
     }
 
-    public void setMarker(Integer marker) {
+    public void setMarker(int marker) {
         this.marker = marker;
     }
 }

@@ -6,4 +6,9 @@
         select * from m_service_interface
         where api = #{api} and request_type = #{requestType} and version_id = #{versionId}
     </select>
+
+    <insert id="saveInterface" parameterType="com.example.msversiongatewaycontroller.entity.MServiceInterface">
+        insert into m_service_interface (api, description, request_type, version_id, marker)
+        values (#{api}, #{description}, #{requestType}, #{versionId}, #{marker})
+    </insert>
 </mapper>

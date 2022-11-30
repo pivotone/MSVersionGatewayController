@@ -78,7 +78,6 @@ public class ParseInterfaceController {
         }
         int serviceId = service.getServiceId();
         String[] versions = info.get("version").asText().split("\\.");
-        LOGGER.info(serviceId + " :" + versions[0] + " " + versions[1] + " " +versions[2]);
         MServiceVersion serviceVersion = new MServiceVersion(serviceId, Integer.parseInt(versions[0]),
                 Integer.parseInt(versions[1]), Integer.parseInt(versions[2]));
         serviceVersion = mServiceVersionService.selectByVersionAndService(serviceVersion);
@@ -86,6 +85,7 @@ public class ParseInterfaceController {
             return;
         }
         int versionId = serviceVersion.getVersionId();
+        LOGGER.info("获取到的version id为：" + versionId);
         JsonNode paths = node.get("paths");
         Iterator<String> keys = paths.fieldNames();
         while(keys.hasNext()) {
@@ -111,7 +111,7 @@ public class ParseInterfaceController {
                     MServiceInterface tempServiceInterface =
                             mServiceInterfaceService.selectInterfaceByMethodAndApi(serviceInterface);
                     if(tempServiceInterface == null) {
-                        mServiceInterfaceService.save(serviceInterface);
+                        mServiceInterfaceService.saveInterface(serviceInterface);
                     }
                 }
             }));

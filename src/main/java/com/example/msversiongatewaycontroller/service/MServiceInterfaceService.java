@@ -13,4 +13,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
  */
 public interface MServiceInterfaceService extends IService<MServiceInterface> {
     MServiceInterface selectInterfaceByMethodAndApi(MServiceInterface serviceInterface);
+
+
+    boolean saveInterface(MServiceInterface entity);
 }

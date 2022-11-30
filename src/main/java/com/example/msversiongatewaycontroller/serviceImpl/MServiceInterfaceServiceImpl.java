@@ -25,4 +25,8 @@ public class MServiceInterfaceServiceImpl extends ServiceImpl<MServiceInterfaceM
     public MServiceInterface selectInterfaceByMethodAndApi(MServiceInterface serviceInterface) {
         return interfaceMapper.selectInterfaceByMethodAndApi(serviceInterface);
     }
+
+    public boolean saveInterface(MServiceInterface entity) {
+        return interfaceMapper.saveInterface(entity);
+    }
 }
