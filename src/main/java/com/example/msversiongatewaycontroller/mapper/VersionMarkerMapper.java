@@ -5,6 +5,10 @@ import com.example.msversiongatewaycontroller.entity.VersionMarker;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
+import org.springframework.stereotype.Repository;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * <p>
@@ -15,9 +19,7 @@ import org.apache.ibatis.annotations.Param;
  * @since 2022-11-30
  */
 @Mapper
+@Repository
 public interface VersionMarkerMapper extends BaseMapper<VersionMarker> {
-    VersionInterval callGetVersionInterval(@Param("major") int major, @Param("minor") int minor,
-                                           @Param("patch") int patch, @Param("url") String url,
-                                           @Param("requestType") String requestType,
-                                           VersionInterval interval);
+    String callGetVersionInterval(Map<String, Object> params);
 }

@@ -1,6 +1,5 @@
 package com.example.msversiongatewaycontroller.serviceImpl;
 
-import com.example.msversiongatewaycontroller.entity.VersionInterval;
 import com.example.msversiongatewaycontroller.entity.VersionMarker;
 import com.example.msversiongatewaycontroller.mapper.VersionMarkerMapper;
 import com.example.msversiongatewaycontroller.service.VersionMarkerService;
@@ -8,6 +7,8 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * <p>
@@ -23,8 +24,7 @@ public class VersionMarkerServiceImpl extends ServiceImpl<VersionMarkerMapper, V
     VersionMarkerMapper versionMarkerMapper;
 
     @Override
-    public VersionInterval callGetVersionInterval(int major, int minor, int patch, String url,
-                                                  String requestType, VersionInterval interval) {
-        return versionMarkerMapper.callGetVersionInterval(major, minor, patch, url, requestType, interval);
+    public String callGetVersionInterval(Map<String, Object> params) {
+        return versionMarkerMapper.callGetVersionInterval(params);
     }
 }

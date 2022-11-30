@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.example.msversiongatewaycontroller.mapper.VersionMarkerMapper">
-    <select id="callGetVersionInterval" parameterType="map" statementType="CALLABLE"
-            resultType="com.example.msversiongatewaycontroller.entity.VersionInterval">
-        call get_version_interval(
-            #{major, mode=IN},
-            #{minor, mode=IN},
-            #{patch, mode=IN},
-            #{url, mode=IN},
-            #{resquestType, mode=IN},
-            #{left, mode=OUT},
-            #{right, mode=OUT}
-            )
+    <select id="callGetVersionInterval" statementType="CALLABLE" parameterType="java.util.Map">
+        {call get_version_interval(
+            #{major, mode=IN, jdbcType=INTEGER},
+            #{minor, mode=IN, jdbcType=INTEGER},
+            #{patch, mode=IN, jdbcType=INTEGER},
+            #{url, mode=IN, jdbcType=VARCHAR},
+            #{requestType, mode=IN, jdbcType=VARCHAR},
+            #{leftVersion, mode=OUT, jdbcType=VARCHAR},
+            #{rightVersion, mode=OUT, jdbcType=VARCHAR}
+            )}
     </select>
 </mapper>
+

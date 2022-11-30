@@ -8,6 +8,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import javax.annotation.Resource;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
@@ -21,9 +24,16 @@ class VersionMarkerServiceTest {
     @Test
     void callGetVersionInterval() {
         String url = "/api/infos";
-        VersionInterval interval = versionMarkerService.callGetVersionInterval(0, 0, 1, url, "get", new VersionInterval());
-        LOGGER.info(url + " and get " + interval.getLeft() + " , " + interval.getRight());
-        interval = versionMarkerService.callGetVersionInterval(0, 0, 1, url, "post", new VersionInterval());
-        LOGGER.info(url + " and post " + interval.getLeft() + " , " + interval.getRight());
+        Map<String, Object> params = new HashMap<>();
+        params.put("major", 0);
+        params.put("minor", 0);
+        params.put("patch", 1);
+        params.put("url", url);
+        params.put("requestType", "get");
+        versionMarkerService.callGetVersionInterval(params);
+        LOGGER.info(url + " and get is left version :" + params.get("leftVersion") + ", right version :" + params.get("rightVersion"));
+        params.put("requestType", "post");
+        versionMarkerService.callGetVersionInterval(params);
+        LOGGER.info(url + " and post is left version :" + params.get("leftVersion") + ", right version :" + params.get("rightVersion"));
     }
 }

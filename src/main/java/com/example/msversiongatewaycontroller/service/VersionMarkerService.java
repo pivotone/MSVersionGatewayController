@@ -1,8 +1,10 @@
 package com.example.msversiongatewaycontroller.service;
 
-import com.example.msversiongatewaycontroller.entity.VersionInterval;
 import com.example.msversiongatewaycontroller.entity.VersionMarker;
 import com.baomidou.mybatisplus.extension.service.IService;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * <p>
@@ -13,6 +15,5 @@ import com.baomidou.mybatisplus.extension.service.IService;
  * @since 2022-11-30
  */
 public interface VersionMarkerService extends IService<VersionMarker> {
-    VersionInterval callGetVersionInterval(int major, int minor, int patch, String url,
-                                           String requestType, VersionInterval interval);
+    String callGetVersionInterval(Map<String, Object> params);
 }
