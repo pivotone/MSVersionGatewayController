@@ -43,6 +43,7 @@ public class ServiceGetTask {
     private NacosDiscoveryProperties nacosDiscoveryProperties;
 
     private final Map<String, Boolean> serviceMap = new ConcurrentHashMap<>();
+    public final static Map<String, Integer> idMap = new ConcurrentHashMap<>();
 
     @Scheduled(initialDelay = 1000, fixedDelay = 5 * 1000)
     public void scheduleServiceTask() throws IOException, NacosException {
@@ -94,6 +95,7 @@ public class ServiceGetTask {
                     }
                     int serviceId = service.getServiceId();
                     LOGGER.info("获得的service id为：" + serviceId);
+                    idMap.put(((NamingEvent) event).getServiceName(), serviceId);
                     List<Instance> instances = ((NamingEvent) event).getInstances();
                     for(Instance instance : instances) {
                         Map<String, String> map = instance.getMetadata();
