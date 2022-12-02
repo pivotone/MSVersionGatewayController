@@ -27,7 +27,7 @@ class VersionMarkerServiceTest {
         Map<String, Object> params = new HashMap<>();
         params.put("major", 0);
         params.put("minor", 0);
-        params.put("patch", 1);
+        params.put("patch", 2);
         params.put("url", url);
         params.put("requestType", "get");
         versionMarkerService.callGetVersionInterval(params);

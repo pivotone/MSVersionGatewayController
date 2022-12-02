@@ -26,11 +26,12 @@ public class VersionGetGlobalFilter implements GlobalFilter, Ordered {
     private static final Logger LOGGER = LoggerFactory.getLogger(VersionLoadBalancerRule.class);
     public static String VERSION = "latest";
     public static String SERVICE_NAME = "service";
-    public String api;
-    public String requestType;
-
+    public static String api;
+    public static String requestType;
     @Resource
-    VersionMarkerService versionMarkerService;
+    VersionMarkerService service;
+
+    public static String[] intervals;
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
         String uri = exchange.getRequest().getURI().getPath();
@@ -54,6 +55,8 @@ public class VersionGetGlobalFilter implements GlobalFilter, Ordered {
         api = uri;
         requestType = Objects.requireNonNull(exchange.getRequest().getMethod()).toString().toLowerCase();
 
+        intervals = getVersionInterval();
+
         ServerHttpRequest request = exchange.getRequest().mutate().path(uri).build();
         exchange.getAttributes().put(ServerWebExchangeUtils.GATEWAY_REQUEST_URL_ATTR, request.getURI());
 
@@ -63,19 +66,27 @@ public class VersionGetGlobalFilter implements GlobalFilter, Ordered {
 
     }
 
-    private String[] getVersionInterval() {
+    public String[] getVersionInterval() {
         Map<String, Object> params = new HashMap<>();
         VersionStringOp stringOp = new VersionStringOp();
-        int[] versionArrays = stringOp.stringVersionToIntArray(VERSION);
+        int[] versionArrays = stringOp.stringVersionToIntArray(VERSION.replace("v", ""));
+//        LOGGER.info("api is " + api);
+//        LOGGER.info("major is " + versionArrays[0]);
+//        LOGGER.info("minor is " + versionArrays[1]);
+//        LOGGER.info("patch is " + versionArrays[2]);
+//        LOGGER.info("requestType is " + requestType);
         params.put("major", versionArrays[0]);
         params.put("minor", versionArrays[1]);
         params.put("patch", versionArrays[2]);
-        params.put("api", api);
+        params.put("url", api);
         params.put("requestType", requestType);
-        versionMarkerService.callGetVersionInterval(params);
+        service.callGetVersionInterval(params);
+//        LOGGER.info("left version :" + params.get("leftVersion") + ", right version :" + params.get("rightVersion"));
         String[] interval = new String[2];
-        interval[0] = String.valueOf(params.get("leftVersion"));
-        interval[1] = String.valueOf(params.get("rightVersion"));
+        interval[0] = (String) params.get("leftVersion");
+        interval[1] = (String) params.get("rightVersion");
+//        LOGGER.info("left is " + interval[0]);
+//        LOGGER.info("right is " + interval[1]);
 
         return interval;
     }
