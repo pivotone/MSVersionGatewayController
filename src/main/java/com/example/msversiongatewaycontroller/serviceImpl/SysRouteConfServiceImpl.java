@@ -111,7 +111,7 @@ public class SysRouteConfServiceImpl extends ServiceImpl<SysRouteConfMapper, Sys
             routeConf.setUri(definition.getUri().toString());
             return routeConf;
         }).collect(Collectors.toList());
-        this.updateBatchById(routeConfList);
+        this.saveOrUpdateBatch(routeConfList);
         log.info("update over");
 
         // 添加发布事件，提醒服务去更改信息
