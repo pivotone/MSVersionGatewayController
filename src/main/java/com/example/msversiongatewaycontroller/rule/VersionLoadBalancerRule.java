@@ -3,9 +3,12 @@ package com.example.msversiongatewaycontroller.rule;
 import com.alibaba.cloud.commons.lang.StringUtils;
 import com.alibaba.cloud.nacos.NacosDiscoveryProperties;
 import com.alibaba.cloud.nacos.balancer.NacosBalancer;
+import com.alibaba.cloud.nacos.discovery.NacosServiceDiscovery;
+import com.alibaba.nacos.api.exception.NacosException;
 import com.example.msversiongatewaycontroller.common.VersionStringOp;
 import com.example.msversiongatewaycontroller.filter.VersionGetGlobalFilter;
 import com.example.msversiongatewaycontroller.service.VersionMarkerService;
+import org.apache.hc.client5.http.fluent.Content;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.ObjectProvider;
@@ -18,16 +21,18 @@ import org.springframework.cloud.loadbalancer.core.NoopServiceInstanceListSuppli
 import org.springframework.cloud.loadbalancer.core.ReactorServiceInstanceLoadBalancer;
 import org.springframework.cloud.loadbalancer.core.SelectedInstanceCallback;
 import org.springframework.cloud.loadbalancer.core.ServiceInstanceListSupplier;
+import org.springframework.web.client.RestTemplate;
 import reactor.core.publisher.Mono;
 
 
 import javax.annotation.Resource;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static com.example.msversiongatewaycontroller.filter.VersionGetGlobalFilter.VERSION;
-import static com.example.msversiongatewaycontroller.filter.VersionGetGlobalFilter.intervals;
+import static com.example.msversiongatewaycontroller.filter.VersionGetGlobalFilter.*;
 
 
 public class VersionLoadBalancerRule implements ReactorServiceInstanceLoadBalancer {
@@ -36,9 +41,15 @@ public class VersionLoadBalancerRule implements ReactorServiceInstanceLoadBalanc
     private NacosDiscoveryProperties nacosDiscoveryProperties;
 
     @Resource
+    private RestTemplate restTemplate;
+
+    @Resource
     private VersionMarkerService service;
 
     private final String serviceId;
+
+    @Resource
+    NacosServiceDiscovery serviceDiscovery;
 
     private final ObjectProvider<ServiceInstanceListSupplier> serviceInstanceListSuppliers;
 
@@ -55,12 +66,16 @@ public class VersionLoadBalancerRule implements ReactorServiceInstanceLoadBalanc
         ServiceInstanceListSupplier supplier = this.serviceInstanceListSuppliers
                 .getIfAvailable(NoopServiceInstanceListSupplier::new);
         return supplier.get(request).next().map((serviceInstances) -> {
-            return this.processInstanceResponse(supplier, serviceInstances);
+            try {
+                return this.processInstanceResponse(supplier, serviceInstances);
+            } catch (IOException | NacosException e) {
+                throw new RuntimeException(e);
+            }
         });
     }
 
     private Response<ServiceInstance> processInstanceResponse(ServiceInstanceListSupplier supplier,
-                                                              List<ServiceInstance> serviceInstances) {
+                                                              List<ServiceInstance> serviceInstances) throws IOException, NacosException {
         Response<ServiceInstance> serviceInstanceResponse = this.getInstanceResponse(serviceInstances);
         if(supplier instanceof SelectedInstanceCallback && serviceInstanceResponse.hasServer()) {
             ((SelectedInstanceCallback) supplier).selectedServiceInstance(serviceInstanceResponse.getServer());
@@ -68,13 +83,14 @@ public class VersionLoadBalancerRule implements ReactorServiceInstanceLoadBalanc
         return serviceInstanceResponse;
     }
 
-    private Response<ServiceInstance> getInstanceResponse(List<ServiceInstance> instances) {
+    private Response<ServiceInstance> getInstanceResponse(List<ServiceInstance> instances) throws IOException, NacosException {
         if(instances.isEmpty()) {
             LOGGER.warn("No instance find in this major version");
             return new EmptyResponse();
         }
         LOGGER.info("select instance from this major version and instances is " + instances.size());
         VersionStringOp stringOp = new VersionStringOp();
+        instances.addAll(getVersionInstances());
 //        LOGGER.info("version interval left is " + intervals[0] + ", right is " + intervals[1]);
         List<ServiceInstance> sameVersionInstances = instances.stream().filter(
 //                        x -> StringUtils.equals(x.getMetadata().get("version"), VERSION.replace("v", "")))
@@ -90,5 +106,26 @@ public class VersionLoadBalancerRule implements ReactorServiceInstanceLoadBalanc
         LOGGER.info("selected instance is " + instance.getMetadata().get("version"));
 
         return new DefaultResponse(instance);
+    }
+
+    private List<ServiceInstance> getVersionInstances() throws IOException, NacosException {
+        int min = Integer.parseInt(intervals[0].substring(0, intervals[0].indexOf('.')));
+        int max = Integer.parseInt(intervals[1].substring(0, intervals[1].indexOf('.')));
+        List<ServiceInstance> lists = new ArrayList<>();
+        for(int i = min; i <= max; ++i) {
+            if(i == Integer.parseInt(VERSION.substring(0, VERSION.indexOf('.'))))
+                continue;
+            String url = SERVICE_NAME +
+                    "-v" +
+                    i;
+            List<ServiceInstance> list = serviceDiscovery.getInstances(url);
+
+            System.out.println(list.get(0).getMetadata().toString());
+
+            lists.addAll(list);
+
+        }
+
+        return lists;
     }
 }

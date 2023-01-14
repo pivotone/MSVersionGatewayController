@@ -50,11 +50,11 @@ public class ParseInterfaceController {
     ThreadPoolTaskExecutor threadPoolTaskExecutor;
 
     @ApiOperation(value = "解析", notes = "解析接口")
-    @PostMapping("/parse")
+    @PostMapping("/parse/url")
     @ApiImplicitParams({
             @ApiImplicitParam(dataType = "String", paramType = "query", name = "url", value = "接口文档地址", required = true)
     })
-    public Result parseInterfaces(@RequestBody String url) throws IOException, InterruptedException {
+    public Result parseInterfacesFromUrl(@RequestBody String url) throws IOException, InterruptedException {
         OkHttpClient client = new OkHttpClient();
         Request request = new Request.Builder()
                 .url(url)
@@ -62,6 +62,16 @@ public class ParseInterfaceController {
         Response response = client.newCall(request).execute();
         String docs = Objects.requireNonNull(response.body()).string();
         parseToDataBase(docs);
+        return ResultUtils.success();
+    }
+
+    @ApiOperation(value = "解析", notes = "解析接口")
+    @PostMapping("/parse/file")
+    @ApiImplicitParams({
+            @ApiImplicitParam(dataType = "String", paramType = "query", name = "url", value = "接口文档地址", required = true)
+    })
+    public Result parseInterfacesFromFile(@RequestBody String url) throws IOException, InterruptedException {
+
         return ResultUtils.success();
     }
 
