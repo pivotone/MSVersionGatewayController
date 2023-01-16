@@ -16,8 +16,13 @@ public class VersionStringOp {
     public boolean compareVersion(String version1, String version2) {
         int[] versionArray1 = stringVersionToIntArray(version1);
         int[] versionArray2 = stringVersionToIntArray(version2);
-        return versionArray1[0] <= versionArray2[0]
-                && versionArray1[1] <= versionArray2[1]
-                && versionArray1[2] <= versionArray2[2];
+//        return versionArray1[0] <= versionArray2[0] && (versionArray1[1] <= versionArray2[1] && versionArray1[2] <= versionArray2[2]);
+        if(versionArray1[0] <= versionArray2[0])
+            return true;
+        else
+            if(versionArray1[1] <= versionArray2[1])
+                return true;
+            else
+                return versionArray1[2] <= versionArray2[2];
     }
 }

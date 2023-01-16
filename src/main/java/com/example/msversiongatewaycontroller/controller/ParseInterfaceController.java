@@ -20,15 +20,20 @@ import okhttp3.Request;
 import okhttp3.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.http.MediaType;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.util.StreamUtils;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
+import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Objects;
 
 @Api(tags = "接口操作")
@@ -49,7 +54,7 @@ public class ParseInterfaceController {
     @Resource
     ThreadPoolTaskExecutor threadPoolTaskExecutor;
 
-    @ApiOperation(value = "解析", notes = "解析接口")
+    @ApiOperation(value = "解析地址", notes = "解析地址接口")
     @PostMapping("/parse/url")
     @ApiImplicitParams({
             @ApiImplicitParam(dataType = "String", paramType = "query", name = "url", value = "接口文档地址", required = true)
@@ -65,12 +70,30 @@ public class ParseInterfaceController {
         return ResultUtils.success();
     }
 
-    @ApiOperation(value = "解析", notes = "解析接口")
-    @PostMapping("/parse/file")
-    @ApiImplicitParams({
-            @ApiImplicitParam(dataType = "String", paramType = "query", name = "url", value = "接口文档地址", required = true)
-    })
-    public Result parseInterfacesFromFile(@RequestBody String url) throws IOException, InterruptedException {
+//    @ApiOperation(value = "解析文件", notes = "解析文件接口")
+//    @RequestMapping(value = "/parse/upload", method = RequestMethod.POST, produces = "multipart/form-data")
+//    @ApiImplicitParams({
+    @PostMapping(value = "/parse/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+//            @ApiImplicitParam(dataType = "File", paramType = "query", name = "files", value = "接口文档", required = true)
+//    })
+    public Result parseInterfacesFromFile(@RequestParam("files") List<MultipartFile> fileList) throws IOException, InterruptedException {
+        for (MultipartFile file : fileList) {
+            String fileName = file.getOriginalFilename();  // 文件名
+            File dest = new File("D:/Users/16604/IdeaProjects/MSVersionGatewayController/src/main/resources/apidocs/" + fileName);
+            if (!dest.getParentFile().exists()) {
+                dest.getParentFile().mkdirs();
+            }
+            try {
+                file.transferTo(dest);
+            } catch (Exception e) {
+                return ResultUtils.error("1000", "upload file failed!");
+            }
+            ClassPathResource classPathResource = new ClassPathResource("D:/Users/16604/IdeaProjects/MSVersionGatewayController/src/main/resources/apidocs/" + fileName);
+            InputStream inputStream = classPathResource.getInputStream();
+            String s = StreamUtils.copyToString(inputStream, StandardCharsets.UTF_8);
+            parseToDataBase(s);
+            inputStream.close();
+        }
 
         return ResultUtils.success();
     }

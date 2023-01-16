@@ -7,10 +7,7 @@ import com.example.msversiongatewaycontroller.entity.Result;
 import com.example.msversiongatewaycontroller.entity.SysRouteConf;
 import com.example.msversiongatewaycontroller.service.SysRouteConfService;
 import com.example.msversiongatewaycontroller.utils.ResultUtils;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.stereotype.Controller;
 
 import javax.annotation.Resource;
@@ -29,12 +26,12 @@ public class SysRouteConfController {
     @Resource
     SysRouteConfService routeConfService;
 
-    @GetMapping("/getAll")
+    @GetMapping("/routes")
     public Result getAllRouteConf() {
         return ResultUtils.success(routeConfService.routes());
     }
 
-    @GetMapping("/get")
+    @GetMapping("/route")
     public Result getRouteConf(@RequestBody Integer id) {
         SysRouteConf conf = new SysRouteConf();
         conf.setDelFlag(false);
@@ -42,11 +39,19 @@ public class SysRouteConfController {
         return ResultUtils.success(routeConfService.getOne(new QueryWrapper<>(conf)));
     }
 
-    @PostMapping("/update")
+    @PostMapping("/route")
     public Result updateRouteConf(@RequestBody String confList) {
         JSONArray conf = JSON.parseArray(confList);
         routeConfService.editRoutes(conf);
         return ResultUtils.success();
+    }
+
+    @DeleteMapping("/route")
+    public Result deleteRouteConf(@RequestBody Integer id) {
+        SysRouteConf conf = new SysRouteConf();
+        conf.setDelFlag(false);
+        conf.setId(id);
+        return ResultUtils.success(routeConfService.remove((new QueryWrapper<>(conf))));
     }
 
 }

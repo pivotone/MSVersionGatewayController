@@ -97,9 +97,9 @@ public class SysRouteConfServiceImpl extends ServiceImpl<SysRouteConfMapper, Sys
             routeDefinitionList.add(definition);
         });
 
-        // 待修改，是直接保存数据库，还是应该由redis设置定时任务来保存
+        // 修改删除逻辑
         SysRouteConf conf = new SysRouteConf();
-        conf.setDelFlag(STATUS_NORMAL);
+        conf.setDelFlag(!STATUS_NORMAL);
         this.remove(new QueryWrapper<>(conf));
 
         List<SysRouteConf> routeConfList = routeDefinitionList.stream().map(definition -> {

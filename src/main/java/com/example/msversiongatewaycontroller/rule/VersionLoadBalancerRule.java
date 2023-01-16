@@ -90,9 +90,10 @@ public class VersionLoadBalancerRule implements ReactorServiceInstanceLoadBalanc
         }
         LOGGER.info("select instance from this major version and instances is " + instances.size());
         VersionStringOp stringOp = new VersionStringOp();
-        instances.addAll(getVersionInstances());
+        List<ServiceInstance> instances1 = new ArrayList<>(instances);
+        instances1.addAll(getVersionInstances());
 //        LOGGER.info("version interval left is " + intervals[0] + ", right is " + intervals[1]);
-        List<ServiceInstance> sameVersionInstances = instances.stream().filter(
+        List<ServiceInstance> sameVersionInstances = instances1.stream().filter(
 //                        x -> StringUtils.equals(x.getMetadata().get("version"), VERSION.replace("v", "")))
                     x -> stringOp.compareVersion(x.getMetadata().get("version"), intervals[1])
                             && stringOp.compareVersion(intervals[0], x.getMetadata().get("version"))
@@ -113,14 +114,16 @@ public class VersionLoadBalancerRule implements ReactorServiceInstanceLoadBalanc
         int max = Integer.parseInt(intervals[1].substring(0, intervals[1].indexOf('.')));
         List<ServiceInstance> lists = new ArrayList<>();
         for(int i = min; i <= max; ++i) {
-            if(i == Integer.parseInt(VERSION.substring(0, VERSION.indexOf('.'))))
+            if(i == Integer.parseInt(VERSION.substring(1, VERSION.indexOf('.'))))
                 continue;
             String url = SERVICE_NAME +
                     "-v" +
                     i;
             List<ServiceInstance> list = serviceDiscovery.getInstances(url);
 
-            System.out.println(list.get(0).getMetadata().toString());
+//            System.out.println(list.get(0).getMetadata().toString());
+
+//            list.removeIf(instances::contains);
 
             lists.addAll(list);
 
