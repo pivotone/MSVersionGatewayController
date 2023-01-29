@@ -1,5 +1,6 @@
 package com.example.msversiongatewaycontroller.controller;
 
+import com.alibaba.fastjson.JSON;
 import com.example.msversiongatewaycontroller.entity.MService;
 import com.example.msversiongatewaycontroller.entity.MServiceInterface;
 import com.example.msversiongatewaycontroller.entity.MServiceVersion;
@@ -20,20 +21,22 @@ import okhttp3.Request;
 import okhttp3.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.buffer.DataBufferUtils;
 import org.springframework.http.MediaType;
+import org.springframework.http.codec.multipart.FilePart;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
-import org.springframework.util.StreamUtils;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
+import org.yaml.snakeyaml.Yaml;
+import reactor.core.publisher.Mono;
 
 import javax.annotation.Resource;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
+import java.io.*;
+import java.nio.channels.AsynchronousFileChannel;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Objects;
 
 @Api(tags = "接口操作")
@@ -73,29 +76,52 @@ public class ParseInterfaceController {
 //    @ApiOperation(value = "解析文件", notes = "解析文件接口")
 //    @RequestMapping(value = "/parse/upload", method = RequestMethod.POST, produces = "multipart/form-data")
 //    @ApiImplicitParams({
-    @PostMapping(value = "/parse/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PostMapping(value = "/parse/upload",  consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
 //            @ApiImplicitParam(dataType = "File", paramType = "query", name = "files", value = "接口文档", required = true)
 //    })
-    public Result parseInterfacesFromFile(@RequestParam("files") List<MultipartFile> fileList) throws IOException, InterruptedException {
-        for (MultipartFile file : fileList) {
-            String fileName = file.getOriginalFilename();  // 文件名
-            File dest = new File("D:/Users/16604/IdeaProjects/MSVersionGatewayController/src/main/resources/apidocs/" + fileName);
-            if (!dest.getParentFile().exists()) {
-                dest.getParentFile().mkdirs();
-            }
-            try {
-                file.transferTo(dest);
-            } catch (Exception e) {
-                return ResultUtils.error("1000", "upload file failed!");
-            }
-            ClassPathResource classPathResource = new ClassPathResource("D:/Users/16604/IdeaProjects/MSVersionGatewayController/src/main/resources/apidocs/" + fileName);
-            InputStream inputStream = classPathResource.getInputStream();
-            String s = StreamUtils.copyToString(inputStream, StandardCharsets.UTF_8);
-            parseToDataBase(s);
-            inputStream.close();
-        }
+    public Mono<Result> parseInterfacesFromFile(@RequestPart("file") FilePart file) throws IOException, InterruptedException {
+//        for (FilePart file : fileList) {
+            String fileName = file.filename();  // 文件名
+            System.out.println(fileName);
+            Path tempFile = Files.createFile(Paths.get("D:/Users/16604/IdeaProjects/MSVersionGatewayController/src/main/resources/apidocs/" + fileName));
+//            File dest = new File("D:/Users/16604/IdeaProjects/MSVersionGatewayController/src/main/resources/apidocs/" + fileName);
+            AsynchronousFileChannel channel =
+                    AsynchronousFileChannel.open(tempFile, StandardOpenOption.WRITE);
+            DataBufferUtils.write(file.content(), channel, 0)
+                    .doOnComplete(() -> {
+//                        ClassPathResource classPathResource = new ClassPathResource("src/main/resources/apidocs/" + fileName);
+                        InputStream inputStream = null;
+                        try {
+                            inputStream = Files.newInputStream(new File(tempFile.toFile().getPath()).toPath());
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
+                        }
+                        Yaml yaml = new Yaml();
+                        String s = null;
+                        try {
+                            Object result = yaml.load(new FileInputStream(tempFile.toFile()));
+                            s = JSON.parseObject(JSON.toJSONString(result)).toJSONString();
+                        } catch (FileNotFoundException e) {
+                            throw new RuntimeException(e);
+                        }
+                        try {
+                            parseToDataBase(s);
+                        } catch (JsonProcessingException e) {
+                            throw new RuntimeException(e);
+                        } catch (InterruptedException e) {
+                            throw new RuntimeException(e);
+                        }
+                        try {
+                            inputStream.close();
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
+                        }
+                    })
+                    .subscribe();
 
-        return ResultUtils.success();
+//        }
+
+        return Mono.just(ResultUtils.success());
     }
 
     private void parseToDataBase(String docs) throws JsonProcessingException, InterruptedException {
