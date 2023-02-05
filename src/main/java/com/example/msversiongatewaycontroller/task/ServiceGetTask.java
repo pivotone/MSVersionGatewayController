@@ -45,7 +45,7 @@ public class ServiceGetTask {
     private final Map<String, Boolean> serviceMap = new ConcurrentHashMap<>();
     public final static Map<String, Integer> idMap = new ConcurrentHashMap<>();
 
-    @Scheduled(initialDelay = 1000, fixedDelay = 5 * 1000)
+    @Scheduled(initialDelay = 1000, fixedDelay = 5 * 60 * 1000)
     public void scheduleServiceTask() throws IOException, NacosException {
         List<String> serviceNameLists = client.getServices();
         setFalse(serviceNameLists);

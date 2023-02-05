@@ -62,7 +62,7 @@ public class ParseInterfaceController {
     @ApiImplicitParams({
             @ApiImplicitParam(dataType = "String", paramType = "query", name = "url", value = "接口文档地址", required = true)
     })
-    public Result parseInterfacesFromUrl(@RequestBody String url) throws IOException, InterruptedException {
+    public Mono<Result> parseInterfacesFromUrl(@RequestBody String url) throws IOException, InterruptedException {
         OkHttpClient client = new OkHttpClient();
         Request request = new Request.Builder()
                 .url(url)
@@ -70,7 +70,7 @@ public class ParseInterfaceController {
         Response response = client.newCall(request).execute();
         String docs = Objects.requireNonNull(response.body()).string();
         parseToDataBase(docs);
-        return ResultUtils.success();
+        return Mono.just(ResultUtils.success());
     }
 
 //    @ApiOperation(value = "解析文件", notes = "解析文件接口")
@@ -79,8 +79,8 @@ public class ParseInterfaceController {
     @PostMapping(value = "/parse/upload",  consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
 //            @ApiImplicitParam(dataType = "File", paramType = "query", name = "files", value = "接口文档", required = true)
 //    })
-    public Mono<Result> parseInterfacesFromFile(@RequestPart("file") FilePart file) throws IOException, InterruptedException {
-//        for (FilePart file : fileList) {
+    public Mono<Result> parseInterfacesFromFile(@RequestPart("file") FilePart[] fileList) throws IOException, InterruptedException {
+        for (FilePart file : fileList) {
             String fileName = file.filename();  // 文件名
             System.out.println(fileName);
             Path tempFile = Files.createFile(Paths.get("D:/Users/16604/IdeaProjects/MSVersionGatewayController/src/main/resources/apidocs/" + fileName));
@@ -89,7 +89,7 @@ public class ParseInterfaceController {
                     AsynchronousFileChannel.open(tempFile, StandardOpenOption.WRITE);
             DataBufferUtils.write(file.content(), channel, 0)
                     .doOnComplete(() -> {
-//                        ClassPathResource classPathResource = new ClassPathResource("src/main/resources/apidocs/" + fileName);
+//                        ClassPathResource = new ClassPathResource("src/main/resources/apidocs/" + fileName);
                         InputStream inputStream = null;
                         try {
                             inputStream = Files.newInputStream(new File(tempFile.toFile().getPath()).toPath());
@@ -119,7 +119,7 @@ public class ParseInterfaceController {
                     })
                     .subscribe();
 
-//        }
+        }
 
         return Mono.just(ResultUtils.success());
     }
