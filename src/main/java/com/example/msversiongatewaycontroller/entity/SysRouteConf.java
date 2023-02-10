@@ -6,6 +6,8 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import java.io.Serializable;
 import java.sql.Blob;
 import java.time.LocalDateTime;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModel;
 
 /**
@@ -35,10 +37,12 @@ public class SysRouteConf implements Serializable {
 
     private Integer order;
 
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDateTime createTime;
 
     private Boolean delFlag;
 
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDateTime updateTime;
 
     public Integer getId() {

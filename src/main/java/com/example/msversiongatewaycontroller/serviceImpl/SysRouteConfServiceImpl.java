@@ -39,7 +39,7 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 @Slf4j
 public class SysRouteConfServiceImpl extends ServiceImpl<SysRouteConfMapper, SysRouteConf> implements SysRouteConfService {
-    private final RedisTemplate redisTemplate;
+    private final RedisTemplate<String, Object> redisTemplate;
     private final ApplicationEventPublisher applicationEventPublisher;
     private static final boolean STATUS_NORMAL = false;
     private static final String ROUTE_KEY = "route_key";
@@ -60,12 +60,13 @@ public class SysRouteConfServiceImpl extends ServiceImpl<SysRouteConfMapper, Sys
         routes.forEach(value -> {
             log.info("update info of route -> {}",value);
             RouteDefinition definition = new RouteDefinition();
-            Map<String, Object> map = (Map)value;
+            Map<String, Object> map = (Map) value;
 
             Object id = map.get("routeId");
 
-            if(id != null)
+            if(id != null) {
                 definition.setId(String.valueOf(id));
+            }
 
             Object predicates = map.get("predicates");
             if(predicates != null) {
@@ -84,12 +85,15 @@ public class SysRouteConfServiceImpl extends ServiceImpl<SysRouteConfMapper, Sys
             }
 
             Object uri = map.get("uri");
-            if(uri != null)
+            if(uri != null) {
                 definition.setUri(URI.create(String.valueOf(uri)));
+            }
 
             Object order = map.get("order");
-            if(order != null)
+            if(order != null) {
                 definition.setOrder(Integer.parseInt(String.valueOf(order)));
+
+            }
 
             redisTemplate.setHashValueSerializer(new
                     Jackson2JsonRedisSerializer<>(RouteDefinition.class));

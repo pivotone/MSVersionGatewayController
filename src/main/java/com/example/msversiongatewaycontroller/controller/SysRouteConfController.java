@@ -9,6 +9,7 @@ import com.example.msversiongatewaycontroller.service.SysRouteConfService;
 import com.example.msversiongatewaycontroller.utils.ResultUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.stereotype.Controller;
+import reactor.core.publisher.Mono;
 
 import javax.annotation.Resource;
 
@@ -27,31 +28,31 @@ public class SysRouteConfController {
     SysRouteConfService routeConfService;
 
     @GetMapping("/routes")
-    public Result getAllRouteConf() {
-        return ResultUtils.success(routeConfService.routes());
+    public Mono<Result> getAllRouteConf() {
+        return Mono.just(ResultUtils.success(routeConfService.routes()));
     }
 
     @GetMapping("/route")
-    public Result getRouteConf(@RequestBody Integer id) {
+    public Mono<Result> getRouteConf(@RequestBody Integer id) {
         SysRouteConf conf = new SysRouteConf();
         conf.setDelFlag(false);
         conf.setId(id);
-        return ResultUtils.success(routeConfService.getOne(new QueryWrapper<>(conf)));
+        return Mono.just(ResultUtils.success(routeConfService.getOne(new QueryWrapper<>(conf))));
     }
 
     @PostMapping("/route")
-    public Result updateRouteConf(@RequestBody String confList) {
+    public Mono<Result> updateRouteConf(@RequestBody String confList) {
         JSONArray conf = JSON.parseArray(confList);
         routeConfService.editRoutes(conf);
-        return ResultUtils.success();
+        return Mono.just(ResultUtils.success());
     }
 
     @DeleteMapping("/route")
-    public Result deleteRouteConf(@RequestBody Integer id) {
+    public Mono<Result> deleteRouteConf(@RequestBody Integer id) {
         SysRouteConf conf = new SysRouteConf();
         conf.setDelFlag(false);
         conf.setId(id);
-        return ResultUtils.success(routeConfService.remove((new QueryWrapper<>(conf))));
+        return Mono.just(ResultUtils.success(routeConfService.remove((new QueryWrapper<>(conf)))));
     }
 
 }

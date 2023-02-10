@@ -11,6 +11,8 @@ spring:
     username: root
     password: houshengming
     url: jdbc:mysql://39.104.112.98:5775/MSversion
+    hikari:
+      max-lifetime: 60000
   redis:
     host: 39.104.112.98
     port: 6463

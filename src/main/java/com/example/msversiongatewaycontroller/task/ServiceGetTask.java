@@ -12,6 +12,10 @@ import com.example.msversiongatewaycontroller.entity.MService;
 import com.example.msversiongatewaycontroller.entity.MServiceVersion;
 import com.example.msversiongatewaycontroller.service.MServiceService;
 import com.example.msversiongatewaycontroller.service.MServiceVersionService;
+import io.netty.channel.AbstractChannel;
+import io.netty.channel.nio.NioEventLoopGroup;
+import io.netty.util.concurrent.DefaultEventExecutor;
+import io.netty.util.concurrent.SingleThreadEventExecutor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cloud.client.discovery.DiscoveryClient;
@@ -45,6 +49,8 @@ public class ServiceGetTask {
     private final Map<String, Boolean> serviceMap = new ConcurrentHashMap<>();
     public final static Map<String, Integer> idMap = new ConcurrentHashMap<>();
 
+    NioEventLoopGroup workerGroup = new NioEventLoopGroup();
+
     @Scheduled(initialDelay = 1000, fixedDelay = 5 * 60 * 1000)
     public void scheduleServiceTask() throws IOException, NacosException {
         List<String> serviceNameLists = client.getServices();
@@ -61,15 +67,23 @@ public class ServiceGetTask {
                 continue;
             }
             serviceMap.put(name, true);
-            Executor executor = new ThreadPoolExecutor(1, 1, 0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>(),
-                    new ThreadFactory() {
-                        @Override
-                        public Thread newThread(Runnable r) {
-                            Thread thread = new Thread(r);
-                            thread.setName(name);
-                            return thread;
-                        }
-                    });
+            Executor executor = new DefaultEventExecutor(workerGroup ,new ThreadFactory() {
+                @Override
+                public Thread newThread(Runnable r) {
+                    Thread thread = new Thread(r);
+                    thread.setName(name);
+                    return thread;
+                }
+            });
+//            Executor executor1 = new ThreadPoolExecutor(1, 1, 0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>(),
+//                    new ThreadFactory() {
+//                        @Override
+//                        public Thread newThread(Runnable r) {
+//                            Thread thread = new Thread(r);
+//                            thread.setName(name);
+//                            return thread;
+//                        }
+//                    });
             naming.subscribe(name, new AbstractEventListener() {
                 @Override
                 public Executor getExecutor() {
@@ -114,8 +128,10 @@ public class ServiceGetTask {
     }
     private void setFalse(List<String> serviceNameLists) {
         serviceMap.replaceAll((k, v) -> false);
-        for(String name : serviceNameLists)
-            if(serviceMap.containsKey(name))
+        for(String name : serviceNameLists) {
+            if(serviceMap.containsKey(name)) {
                 serviceMap.put(name, true);
+            }
+        }
     }
 }
