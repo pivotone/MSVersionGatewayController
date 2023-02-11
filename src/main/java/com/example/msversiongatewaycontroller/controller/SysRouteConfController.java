@@ -1,10 +1,12 @@
 package com.example.msversiongatewaycontroller.controller;
 
+import com.alibaba.cloud.commons.lang.StringUtils;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.example.msversiongatewaycontroller.entity.Result;
 import com.example.msversiongatewaycontroller.entity.SysRouteConf;
+import com.example.msversiongatewaycontroller.handler.GatewayServiceHandler;
 import com.example.msversiongatewaycontroller.service.SysRouteConfService;
 import com.example.msversiongatewaycontroller.utils.ResultUtils;
 import org.springframework.web.bind.annotation.*;
@@ -12,6 +14,7 @@ import org.springframework.stereotype.Controller;
 import reactor.core.publisher.Mono;
 
 import javax.annotation.Resource;
+import java.util.List;
 
 /**
  * <p>
@@ -24,6 +27,9 @@ import javax.annotation.Resource;
 @Controller
 @RequestMapping("/msversiongatewaycontroller/sysRouteConf")
 public class SysRouteConfController {
+
+    @Resource
+    private GatewayServiceHandler serviceHandler;
     @Resource
     SysRouteConfService routeConfService;
 
@@ -33,26 +39,29 @@ public class SysRouteConfController {
     }
 
     @GetMapping("/route")
-    public Mono<Result> getRouteConf(@RequestBody Integer id) {
-        SysRouteConf conf = new SysRouteConf();
-        conf.setDelFlag(false);
-        conf.setId(id);
-        return Mono.just(ResultUtils.success(routeConfService.getOne(new QueryWrapper<>(conf))));
+    public Mono<Result> getRouteConf(@RequestBody SysRouteConf routeConf) {
+        return Mono.just(ResultUtils.success(routeConfService.getOne(new QueryWrapper<>(routeConf))));
     }
 
     @PostMapping("/route")
-    public Mono<Result> updateRouteConf(@RequestBody String confList) {
-        JSONArray conf = JSON.parseArray(confList);
-        routeConfService.editRoutes(conf);
+    public Mono<Result> updateRouteConfs(@RequestBody List<SysRouteConf> routeConfs) {
+        routeConfs.forEach(routeConf -> {
+            if(routeConf.getId() != null) {
+                this.serviceHandler.updateRoute(routeConf);
+                this.routeConfService.update(routeConf);
+            } else {
+                this.routeConfService.add(routeConf);
+                this.serviceHandler.saveRoute(routeConf);
+            }
+        });
         return Mono.just(ResultUtils.success());
     }
 
     @DeleteMapping("/route")
-    public Mono<Result> deleteRouteConf(@RequestBody Integer id) {
-        SysRouteConf conf = new SysRouteConf();
-        conf.setDelFlag(false);
-        conf.setId(id);
-        return Mono.just(ResultUtils.success(routeConfService.remove((new QueryWrapper<>(conf)))));
+    public Mono<Result> deleteRouteConf(@RequestBody String routeId) {
+        this.serviceHandler.deleteRoute(routeId);
+        this.routeConfService.delete(routeId);
+        return Mono.just(ResultUtils.success());
     }
 
 }

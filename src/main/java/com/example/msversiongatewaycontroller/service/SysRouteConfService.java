@@ -17,7 +17,30 @@ import java.util.List;
  */
 public interface SysRouteConfService extends IService<SysRouteConf> {
 
+    /**
+     * get list of route
+     * @return list of route
+     */
     List<SysRouteConf> routes();
 
-    Mono<Void> editRoutes(JSONArray routes);
+    /**
+     * add new route configuration
+     * @param routeConf new route configuration
+     * @return 0 or 1
+     */
+    Integer add(SysRouteConf routeConf);
+
+    /**
+     * update a exist route configuration
+     * @param routeConf need updating route
+     * @return 0 or 1
+     */
+    Integer update(SysRouteConf routeConf);
+
+    /**
+     * delete a exist route configuration
+     * @param routeId need deleting route's id
+     * @return 0 or 1
+     */
+    Integer delete(String routeId);
 }

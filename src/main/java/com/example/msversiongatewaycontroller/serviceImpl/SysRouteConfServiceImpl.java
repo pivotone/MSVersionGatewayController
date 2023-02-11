@@ -18,6 +18,7 @@ import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
+import javax.annotation.Resource;
 import java.io.ByteArrayOutputStream;
 import java.io.ObjectOutputStream;
 import java.net.URI;
@@ -39,101 +40,121 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 @Slf4j
 public class SysRouteConfServiceImpl extends ServiceImpl<SysRouteConfMapper, SysRouteConf> implements SysRouteConfService {
-    private final RedisTemplate<String, Object> redisTemplate;
-    private final ApplicationEventPublisher applicationEventPublisher;
-    private static final boolean STATUS_NORMAL = false;
-    private static final String ROUTE_KEY = "route_key";
+    @Resource
+    private SysRouteConfMapper routeConfMapper;
 
     @Override
     public List<SysRouteConf> routes() {
-        SysRouteConf conf = new SysRouteConf();
-        conf.setDelFlag(STATUS_NORMAL);
-        return baseMapper.selectList(new QueryWrapper<>(conf));
+        List<SysRouteConf> result = new ArrayList<>();
+        List<SysRouteConf> temp = routeConfMapper.selectList(null);
+        temp.forEach(routeConf -> {
+            if(!routeConf.getDelFlag()) {
+                result.add(routeConf);
+            }
+        });
+        return result;
     }
 
     @Override
-    public Mono<Void> editRoutes(JSONArray routes) {
-        Boolean result = redisTemplate.delete(ROUTE_KEY);
-        log.info("clear routes {}", result);
-
-        List<RouteDefinition> routeDefinitionList = new ArrayList<>();
-        routes.forEach(value -> {
-            log.info("update info of route -> {}",value);
-            RouteDefinition definition = new RouteDefinition();
-            Map<String, Object> map = (Map) value;
-
-            Object id = map.get("routeId");
-
-            if(id != null) {
-                definition.setId(String.valueOf(id));
-            }
-
-            Object predicates = map.get("predicates");
-            if(predicates != null) {
-                JSONArray predicatesArray = (JSONArray) predicates;
-                List<PredicateDefinition> predicateDefinitionList =
-                        predicatesArray.toJavaList(PredicateDefinition.class);
-                definition.setPredicates(predicateDefinitionList);
-            }
-
-            Object filters = map.get("filters");
-            if(filters != null) {
-                JSONArray filtersArray = (JSONArray) filters;
-                List<FilterDefinition> filterDefinitionList =
-                        filtersArray.toJavaList(FilterDefinition.class);
-                definition.setFilters(filterDefinitionList);
-            }
-
-            Object uri = map.get("uri");
-            if(uri != null) {
-                definition.setUri(URI.create(String.valueOf(uri)));
-            }
-
-            Object order = map.get("order");
-            if(order != null) {
-                definition.setOrder(Integer.parseInt(String.valueOf(order)));
-
-            }
-
-            redisTemplate.setHashValueSerializer(new
-                    Jackson2JsonRedisSerializer<>(RouteDefinition.class));
-            redisTemplate.opsForHash().put(ROUTE_KEY, definition.getId(), definition);
-            routeDefinitionList.add(definition);
-        });
-
-        // 修改删除逻辑
-        SysRouteConf conf = new SysRouteConf();
-        conf.setDelFlag(!STATUS_NORMAL);
-        this.remove(new QueryWrapper<>(conf));
-
-        List<SysRouteConf> routeConfList = routeDefinitionList.stream().map(definition -> {
-            SysRouteConf routeConf = new SysRouteConf();
-            routeConf.setRouteId(definition.getId());
-            routeConf.setFilters(definition.getFilters().toString());
-            routeConf.setPredicates(definition.getPredicates().toString());
-            routeConf.setOrder(definition.getOrder());
-            routeConf.setUri(definition.getUri().toString());
-            return routeConf;
-        }).collect(Collectors.toList());
-        this.saveOrUpdateBatch(routeConfList);
-        log.info("update over");
-
-        // 添加发布事件，提醒服务去更改信息
-        this.applicationEventPublisher.publishEvent(new RefreshRoutesEvent(this));
-        return Mono.empty();
+    public Integer add(SysRouteConf routeConf) {
+        return routeConfMapper.insert(routeConf);
     }
 
-    public static byte[] ToByte(Object object) {
-        try {
-            ByteArrayOutputStream out = new ByteArrayOutputStream();
-            ObjectOutputStream outputStream = new ObjectOutputStream(out);
-            outputStream.writeObject(object);
-            byte[] bytes = out.toByteArray();
-            outputStream.close();
-            return bytes;
-        } catch (Exception e) {
-            log.info("ObjectBlob create failed");
-            return null;
-        }
+    @Override
+    public Integer update(SysRouteConf routeConf) {
+       return routeConfMapper.updateById(routeConf);
     }
+
+    @Override
+    public Integer delete(String routeId) {
+        QueryWrapper<SysRouteConf> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("route_id", routeId);
+        return routeConfMapper.delete(queryWrapper);
+    }
+
+//    @Override
+//    public Mono<Void> editRoutes(JSONArray routes) {
+//        Boolean result = redisTemplate.delete(ROUTE_KEY);
+//        log.info("clear routes {}", result);
+//
+//        List<RouteDefinition> routeDefinitionList = new ArrayList<>();
+//        routes.forEach(value -> {
+//            log.info("update info of route -> {}",value);
+//            RouteDefinition definition = new RouteDefinition();
+//            Map<String, Object> map = (Map) value;
+//
+//            Object id = map.get("routeId");
+//
+//            if(id != null) {
+//                definition.setId(String.valueOf(id));
+//            }
+//
+//            Object predicates = map.get("predicates");
+//            if(predicates != null) {
+//                JSONArray predicatesArray = (JSONArray) predicates;
+//                List<PredicateDefinition> predicateDefinitionList =
+//                        predicatesArray.toJavaList(PredicateDefinition.class);
+//                definition.setPredicates(predicateDefinitionList);
+//            }
+//
+//            Object filters = map.get("filters");
+//            if(filters != null) {
+//                JSONArray filtersArray = (JSONArray) filters;
+//                List<FilterDefinition> filterDefinitionList =
+//                        filtersArray.toJavaList(FilterDefinition.class);
+//                definition.setFilters(filterDefinitionList);
+//            }
+//
+//            Object uri = map.get("uri");
+//            if(uri != null) {
+//                definition.setUri(URI.create(String.valueOf(uri)));
+//            }
+//
+//            Object order = map.get("order");
+//            if(order != null) {
+//                definition.setOrder(Integer.parseInt(String.valueOf(order)));
+//
+//            }
+//
+//            redisTemplate.setHashValueSerializer(new
+//                    Jackson2JsonRedisSerializer<>(RouteDefinition.class));
+//            redisTemplate.opsForHash().put(ROUTE_KEY, definition.getId(), definition);
+//            routeDefinitionList.add(definition);
+//        });
+//
+//        // 修改删除逻辑
+//        SysRouteConf conf = new SysRouteConf();
+//        conf.setDelFlag(!STATUS_NORMAL);
+//        this.remove(new QueryWrapper<>(conf));
+//
+//        List<SysRouteConf> routeConfList = routeDefinitionList.stream().map(definition -> {
+//            SysRouteConf routeConf = new SysRouteConf();
+//            routeConf.setRouteId(definition.getId());
+//            routeConf.setFilters(definition.getFilters().toString());
+//            routeConf.setPredicates(definition.getPredicates().toString());
+//            routeConf.setOrder(definition.getOrder());
+//            routeConf.setUri(definition.getUri().toString());
+//            return routeConf;
+//        }).collect(Collectors.toList());
+//        this.saveOrUpdateBatch(routeConfList);
+//        log.info("update over");
+//
+//        // 添加发布事件，提醒服务去更改信息
+//        this.applicationEventPublisher.publishEvent(new RefreshRoutesEvent(this));
+//        return Mono.empty();
+//    }
+//
+//    public static byte[] ToByte(Object object) {
+//        try {
+//            ByteArrayOutputStream out = new ByteArrayOutputStream();
+//            ObjectOutputStream outputStream = new ObjectOutputStream(out);
+//            outputStream.writeObject(object);
+//            byte[] bytes = out.toByteArray();
+//            outputStream.close();
+//            return bytes;
+//        } catch (Exception e) {
+//            log.info("ObjectBlob create failed");
+//            return null;
+//        }
+//    }
 }

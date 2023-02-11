@@ -64,6 +64,14 @@ public class GatewayServiceHandler implements ApplicationEventPublisherAware, Co
         this.publisher.publishEvent(new RefreshRoutesEvent(this));
     }
 
+    public void saveRoute(SysRouteConf routeConf) {
+        RouteDefinition definition = handleData(routeConf);
+
+        routeDefinitionWriter.save(Mono.just(definition)).subscribe();
+
+        this.publisher.publishEvent(new RefreshRoutesEvent(this));
+    }
+
     public void updateRoute(SysRouteConf routeConf) {
         SysRouteConf sysRouteConf = new SysRouteConf();
         BeanUtils.copyProperties(routeConf, sysRouteConf);
