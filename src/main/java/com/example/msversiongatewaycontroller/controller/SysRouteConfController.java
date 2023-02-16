@@ -33,6 +33,12 @@ public class SysRouteConfController {
     @Resource
     SysRouteConfService routeConfService;
 
+    @GetMapping("/refresh")
+    public Mono<Result> refresh() {
+        this.serviceHandler.loadRoute();
+        return Mono.just(ResultUtils.success());
+    }
+
     @GetMapping("/routes")
     public Mono<Result> getAllRouteConf() {
         return Mono.just(ResultUtils.success(routeConfService.routes()));
@@ -44,16 +50,21 @@ public class SysRouteConfController {
     }
 
     @PostMapping("/route")
+    public Mono<Result> addRouteConfs(@RequestBody List<SysRouteConf> routeConfs) {
+        routeConfs.forEach(routeConf -> {
+            this.serviceHandler.updateRoute(routeConf);
+            this.routeConfService.update(routeConf);
+        });
+        return Mono.just(ResultUtils.success());
+    }
+
+    @PutMapping("/route")
     public Mono<Result> updateRouteConfs(@RequestBody List<SysRouteConf> routeConfs) {
         routeConfs.forEach(routeConf -> {
-            if(routeConf.getId() != null) {
-                this.serviceHandler.updateRoute(routeConf);
-                this.routeConfService.update(routeConf);
-            } else {
-                this.routeConfService.add(routeConf);
-                this.serviceHandler.saveRoute(routeConf);
-            }
+            this.routeConfService.add(routeConf);
+            this.serviceHandler.saveRoute(routeConf);
         });
+
         return Mono.just(ResultUtils.success());
     }
 
