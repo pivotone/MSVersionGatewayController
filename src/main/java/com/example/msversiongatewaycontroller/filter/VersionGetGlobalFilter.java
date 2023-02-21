@@ -35,6 +35,7 @@ public class VersionGetGlobalFilter implements GlobalFilter, Ordered {
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
         String uri = exchange.getRequest().getURI().getPath();
+        Object headInfo = exchange.getRequest().getHeaders().get("version");
         LOGGER.info("origin uri is " + uri);
         String regex = "v[0-9]\\.[0-9]\\.[0-9]";
         if(uri.matches(".*/" + regex + "/.*")){
@@ -46,6 +47,8 @@ public class VersionGetGlobalFilter implements GlobalFilter, Ordered {
                     break;
                 }
             }
+        } else if(headInfo != null){
+            setVERSION(headInfo.toString());
         }
         uri = uri.replace("/" + VERSION, "");
         uri = uri.replace("/" + SERVICE_NAME, "");
