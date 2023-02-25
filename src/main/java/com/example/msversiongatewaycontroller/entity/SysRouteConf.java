@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import java.io.Serializable;
 import java.sql.Blob;
 import java.time.LocalDateTime;
+import java.util.Date;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModel;
@@ -35,15 +36,15 @@ public class SysRouteConf implements Serializable {
 
     private String uri;
 
-    private Integer order;
+    private Integer orders;
 
     @JsonFormat(pattern = "yyyy-MM-dd")
-    private LocalDateTime createTime;
+    private Date createTime;
 
     private Boolean delFlag;
 
     @JsonFormat(pattern = "yyyy-MM-dd")
-    private LocalDateTime updateTime;
+    private Date updateTime;
 
     public Integer getId() {
         return id;
@@ -80,18 +81,18 @@ public class SysRouteConf implements Serializable {
     public void setUri(String uri) {
         this.uri = uri;
     }
-    public Integer getOrder() {
-        return order;
+    public Integer getOrders() {
+        return orders;
     }
 
-    public void setOrder(Integer order) {
-        this.order = order;
+    public void setOrders(Integer orders) {
+        this.orders = orders;
     }
-    public LocalDateTime getCreateTime() {
+    public Date getCreateTime() {
         return createTime;
     }
 
-    public void setCreateTime(LocalDateTime createTime) {
+    public void setCreateTime(Date createTime) {
         this.createTime = createTime;
     }
     public Boolean getDelFlag() {
@@ -101,11 +102,11 @@ public class SysRouteConf implements Serializable {
     public void setDelFlag(Boolean delFlag) {
         this.delFlag = delFlag;
     }
-    public LocalDateTime getUpdateTime() {
+    public Date getUpdateTime() {
         return updateTime;
     }
 
-    public void setUpdateTime(LocalDateTime updateTime) {
+    public void setUpdateTime(Date updateTime) {
         this.updateTime = updateTime;
     }
 
@@ -117,7 +118,7 @@ public class SysRouteConf implements Serializable {
             ", predicates=" + predicates +
             ", filters=" + filters +
             ", uri=" + uri +
-            ", order=" + order +
+            ", order=" + orders +
             ", createTime=" + createTime +
             ", delFlag=" + delFlag +
             ", updateTime=" + updateTime +

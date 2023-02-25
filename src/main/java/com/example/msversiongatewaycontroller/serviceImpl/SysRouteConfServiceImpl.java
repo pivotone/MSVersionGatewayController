@@ -45,14 +45,8 @@ public class SysRouteConfServiceImpl extends ServiceImpl<SysRouteConfMapper, Sys
 
     @Override
     public List<SysRouteConf> routes() {
-        List<SysRouteConf> result = new ArrayList<>();
         List<SysRouteConf> temp = routeConfMapper.selectList(null);
-        temp.forEach(routeConf -> {
-            if(!routeConf.getDelFlag()) {
-                result.add(routeConf);
-            }
-        });
-        return result;
+        return new ArrayList<>(temp);
     }
 
     @Override
@@ -62,7 +56,9 @@ public class SysRouteConfServiceImpl extends ServiceImpl<SysRouteConfMapper, Sys
 
     @Override
     public Integer update(SysRouteConf routeConf) {
-       return routeConfMapper.updateById(routeConf);
+        QueryWrapper<SysRouteConf> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("route_id", routeConf.getRouteId());
+       return routeConfMapper.update(routeConf, queryWrapper);
     }
 
     @Override

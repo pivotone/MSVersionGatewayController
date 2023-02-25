@@ -30,9 +30,6 @@ public class RedisRouteDefinitionWriter implements RouteDefinitionRepository {
     private static final String ROUTE_KEY = "gateway_route_key";
     @Override
     public Flux<RouteDefinition> getRouteDefinitions() {
-//        redisTemplate.setKeySerializer(new StringRedisSerializer());
-//        redisTemplate.setHashValueSerializer(new Jackson2JsonRedisSerializer<>(RouteDefinition.class));
-//        List<RouteDefinition> values = redisTemplate.opsForHash().values(ROUTE_KEY);
         List<RouteDefinition> values = new ArrayList<>();
 
         List<Object> routes = redisTemplate.opsForHash().values(ROUTE_KEY);

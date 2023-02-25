@@ -14,71 +14,16 @@ spring:
     hikari:
       max-lifetime: 60000
   redis:
-    host: 39.104.112.98
-    port: 6463
+    host: 127.0.0.1
+    port: 6379
   cloud:
     gateway:
       routes:
-        - id: demo_route
-          order: 0
-          uri: lb://service
-          predicates:
-            - Path=/service/**
-        - id: basic
-          order: 0
-          uri: lb://ts-basic
-          predicates:
-            - Path=/ts-basic/**
-        - id: config
-          order: 0
-          uri: lb://ts-config
-          predicates:
-            - Path=/ts-config/**
-        - id: order
-          order: 0
-          uri: lb://ts-order
-          predicates:
-            - Path=/ts-order/**
-        - id: order-other
-          order: 0
-          uri: lb://ts-order-other
-          predicates:
-            - Path=/ts-order-other/**
-        - id: seat
-          order: 0
-          uri: lb://ts-seat
-          predicates:
-            - Path=/ts-seat/**
-        - id: travel
-          order: 0
-          uri: lb://ts-travel
-          predicates:
-            - Path=/ts-travel/**
-        - id: train
-          order: 0
-          uri: lb://ts-train
-          predicates:
-            - Path=/ts-train/**
-        - id: price
-          order: 0
-          uri: lb://ts-price
-          predicates:
-            - Path=/ts-price/**
-        - id: route
-          order: 0
-          uri: lb://ts-route
-          predicates:
-            - Path=/ts-route/**
-        - id: station
-          order: 0
-          uri: lb://ts-station
-          predicates:
-            - Path=/ts-station/**
-        - id: rebook
-          order: 0
-          uri: lb://ts-rebook
-          predicates:
-            - Path=/ts-rebook/**
+#        - id: demo_route
+#          order: 0
+#          uri: lb://service
+#          predicates:
+#            - Path=/service/**
     nacos:
       discovery:
         server-addr: 39.104.112.98:8848

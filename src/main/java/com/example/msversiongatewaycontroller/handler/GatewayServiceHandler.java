@@ -102,7 +102,7 @@ public class GatewayServiceHandler implements ApplicationEventPublisherAware, Co
             if(!routeConf.getUri().startsWith("lb")) {
                 uri = UriComponentsBuilder.fromUriString("lb://" + routeConf.getUri()).build().toUri();
             } else {
-                uri = UriComponentsBuilder.fromHttpUrl(routeConf.getUri()).build().toUri();
+                uri = UriComponentsBuilder.fromUriString(routeConf.getUri()).build().toUri();
             }
         } else {
             uri = UriComponentsBuilder.fromHttpUrl(routeConf.getUri()).build().toUri();
@@ -115,11 +115,14 @@ public class GatewayServiceHandler implements ApplicationEventPublisherAware, Co
 
         routeDefinition.setPredicates(Collections.singletonList(predicate));
 
-        FilterDefinition filter = new FilterDefinition(routeConf.getFilters());
+        if(routeConf.getFilters() != null) {
 
-        routeDefinition.setFilters(Collections.singletonList(filter));
+            FilterDefinition filter = new FilterDefinition(routeConf.getFilters());
 
-        routeDefinition.setOrder(routeConf.getOrder());
+            routeDefinition.setFilters(Collections.singletonList(filter));
+        }
+
+        routeDefinition.setOrder(routeConf.getOrders());
 
         return routeDefinition;
     }
