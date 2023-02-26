@@ -50,8 +50,7 @@ public class VersionGetGlobalFilter implements GlobalFilter, Ordered {
         } else if(headInfo != null){
             setVERSION(headInfo.toString());
         }
-        uri = uri.replace("/" + VERSION, "");
-        uri = uri.replace("/" + SERVICE_NAME, "");
+        uri = uri.replace("/" + SERVICE_NAME + "/" + VERSION, "");
 
         LOGGER.info("new create uri is " + uri);
 
@@ -81,7 +80,8 @@ public class VersionGetGlobalFilter implements GlobalFilter, Ordered {
         params.put("major", versionArrays[0]);
         params.put("minor", versionArrays[1]);
         params.put("patch", versionArrays[2]);
-        params.put("url", api);
+        LOGGER.info("api is " + api.replaceAll("[0-9]", "%"));
+        params.put("url", api.replaceAll("[0-9]", "%"));
         params.put("requestType", requestType);
         service.callGetVersionInterval(params);
 //        LOGGER.info("left version :" + params.get("leftVersion") + ", right version :" + params.get("rightVersion"));

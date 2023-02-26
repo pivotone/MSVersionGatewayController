@@ -2,6 +2,7 @@ package com.example.msversiongatewaycontroller.serviceImpl;
 
 import com.alibaba.fastjson.JSONArray;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.example.msversiongatewaycontroller.entity.SysRouteConf;
 import com.example.msversiongatewaycontroller.mapper.SysRouteConfMapper;
 import com.example.msversiongatewaycontroller.service.SysRouteConfService;
@@ -57,8 +58,8 @@ public class SysRouteConfServiceImpl extends ServiceImpl<SysRouteConfMapper, Sys
     @Override
     public Integer update(SysRouteConf routeConf) {
         QueryWrapper<SysRouteConf> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("route_id", routeConf.getRouteId());
-       return routeConfMapper.update(routeConf, queryWrapper);
+        queryWrapper.eq("id", routeConf.getId());
+        return routeConfMapper.update(routeConf, queryWrapper);
     }
 
     @Override
