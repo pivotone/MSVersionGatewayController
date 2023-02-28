@@ -7,20 +7,24 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
-import org.springframework.cloud.gateway.route.Route;
 import org.springframework.cloud.gateway.support.ServerWebExchangeUtils;
 import org.springframework.core.Ordered;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.stereotype.Component;
+import org.springframework.web.reactive.function.server.HandlerStrategies;
+import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 
 import javax.annotation.Resource;
-import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
+/**
+ * @author pivot
+ * @since 22/10/27
+ */
 @Component
 public class VersionGetGlobalFilter implements GlobalFilter, Ordered {
     private static final Logger LOGGER = LoggerFactory.getLogger(VersionLoadBalancerRule.class);
@@ -35,7 +39,10 @@ public class VersionGetGlobalFilter implements GlobalFilter, Ordered {
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
         String uri = exchange.getRequest().getURI().getPath();
+        Map<String, String> map = exchange.getAttribute(ServerWebExchangeUtils.URI_TEMPLATE_VARIABLES_ATTRIBUTE);
         Object headInfo = exchange.getRequest().getHeaders().get("version");
+        LOGGER.info(exchange.getAttribute(ServerWebExchangeUtils.GATEWAY_PREDICATE_MATCHED_PATH_ATTR)
+                .toString());
         LOGGER.info("origin uri is " + uri);
         String regex = "v[0-9]\\.[0-9]\\.[0-9]";
         if(uri.matches(".*/" + regex + "/.*")){
@@ -55,9 +62,16 @@ public class VersionGetGlobalFilter implements GlobalFilter, Ordered {
         LOGGER.info("new create uri is " + uri);
 
         api = uri;
+        String oriUrl = uri;
+
+        if(map != null && !map.isEmpty() && map.size() > 1) {
+            oriUrl = exchange.getAttribute(ServerWebExchangeUtils.GATEWAY_PREDICATE_MATCHED_PATH_ATTR)
+                    .toString().replace("/" + SERVICE_NAME + "/\\{version:v[0-9]+.[0-9]+.[0-9]+}", "");
+        }
+
         requestType = Objects.requireNonNull(exchange.getRequest().getMethod()).toString().toLowerCase();
 
-        intervals = getVersionInterval();
+        intervals = getVersionInterval(oriUrl);
 
         ServerHttpRequest request = exchange.getRequest().mutate().path(uri).build();
         exchange.getAttributes().put(ServerWebExchangeUtils.GATEWAY_REQUEST_URL_ATTR, request.getURI());
@@ -68,28 +82,31 @@ public class VersionGetGlobalFilter implements GlobalFilter, Ordered {
 
     }
 
-    public String[] getVersionInterval() {
+    private String originUrl(String url, Map<String, String> map) {
+        String res = url;
+        for(String key : map.keySet()) {
+            if("version".equals(key)) {
+                continue;
+            }
+            res = res.replace("/" + map.get(key).toString(),"/{" + key  + "}");
+        }
+        LOGGER.info("modified url is: " + res);
+        return res;
+    }
+
+    public String[] getVersionInterval(String url) {
         Map<String, Object> params = new HashMap<>();
         VersionStringOp stringOp = new VersionStringOp();
         int[] versionArrays = stringOp.stringVersionToIntArray(VERSION.replace("v", ""));
-//        LOGGER.info("api is " + api);
-//        LOGGER.info("major is " + versionArrays[0]);
-//        LOGGER.info("minor is " + versionArrays[1]);
-//        LOGGER.info("patch is " + versionArrays[2]);
-//        LOGGER.info("requestType is " + requestType);
         params.put("major", versionArrays[0]);
         params.put("minor", versionArrays[1]);
         params.put("patch", versionArrays[2]);
-        LOGGER.info("api is " + api.replaceAll("[0-9]", "%"));
-        params.put("url", api.replaceAll("[0-9]", "%"));
+        params.put("url", url);
         params.put("requestType", requestType);
         service.callGetVersionInterval(params);
-//        LOGGER.info("left version :" + params.get("leftVersion") + ", right version :" + params.get("rightVersion"));
         String[] interval = new String[2];
         interval[0] = (String) params.get("leftVersion");
         interval[1] = (String) params.get("rightVersion");
-//        LOGGER.info("left is " + interval[0]);
-//        LOGGER.info("right is " + interval[1]);
 
         return interval;
     }
