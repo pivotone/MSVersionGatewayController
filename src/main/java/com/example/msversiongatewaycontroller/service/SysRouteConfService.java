@@ -42,5 +42,5 @@ public interface SysRouteConfService extends IService<SysRouteConf> {
      * @param routeId need deleting route's id
      * @return 0 or 1
      */
-    Integer delete(String routeId);
+    Integer delete(int Id);
 }

@@ -67,9 +67,9 @@ public class SysRouteConfController {
     }
 
     @DeleteMapping(value = "/route", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public Mono<Result> deleteRouteConf(@RequestBody String routeId) {
-        this.serviceHandler.deleteRoute(routeId);
-        this.routeConfService.delete(routeId);
+    public Mono<Result> deleteRouteConf(@RequestBody SysRouteConf sysRouteConf) {
+        this.serviceHandler.deleteRoute(sysRouteConf.getRouteId());
+        this.routeConfService.delete(sysRouteConf.getId());
         return Mono.just(ResultUtils.success());
     }
 

@@ -1,33 +1,17 @@
 package com.example.msversiongatewaycontroller.serviceImpl;
 
-import com.alibaba.fastjson.JSONArray;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.example.msversiongatewaycontroller.entity.SysRouteConf;
 import com.example.msversiongatewaycontroller.mapper.SysRouteConfMapper;
 import com.example.msversiongatewaycontroller.service.SysRouteConfService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.cloud.gateway.event.RefreshRoutesEvent;
-import org.springframework.cloud.gateway.filter.FilterDefinition;
-import org.springframework.cloud.gateway.handler.predicate.PredicateDefinition;
-import org.springframework.cloud.gateway.route.RouteDefinition;
-import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
 import org.springframework.stereotype.Service;
-import reactor.core.publisher.Mono;
 
 import javax.annotation.Resource;
-import java.io.ByteArrayOutputStream;
-import java.io.ObjectOutputStream;
-import java.net.URI;
-import java.sql.Blob;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -63,9 +47,9 @@ public class SysRouteConfServiceImpl extends ServiceImpl<SysRouteConfMapper, Sys
     }
 
     @Override
-    public Integer delete(String routeId) {
+    public Integer delete(int id) {
         QueryWrapper<SysRouteConf> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("route_id", routeId);
+        queryWrapper.eq("id", id);
         return routeConfMapper.delete(queryWrapper);
     }
 
