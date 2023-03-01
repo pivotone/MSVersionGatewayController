@@ -41,8 +41,6 @@ public class VersionGetGlobalFilter implements GlobalFilter, Ordered {
         String uri = exchange.getRequest().getURI().getPath();
         Map<String, String> map = exchange.getAttribute(ServerWebExchangeUtils.URI_TEMPLATE_VARIABLES_ATTRIBUTE);
         Object headInfo = exchange.getRequest().getHeaders().get("version");
-        LOGGER.info(exchange.getAttribute(ServerWebExchangeUtils.GATEWAY_PREDICATE_MATCHED_PATH_ATTR)
-                .toString());
         LOGGER.info("origin uri is " + uri);
         String regex = "v[0-9]\\.[0-9]\\.[0-9]";
         if(uri.matches(".*/" + regex + "/.*")){
@@ -60,13 +58,15 @@ public class VersionGetGlobalFilter implements GlobalFilter, Ordered {
         uri = uri.replace("/" + SERVICE_NAME + "/" + VERSION, "");
 
         LOGGER.info("new create uri is " + uri);
+        LOGGER.info(exchange.getAttribute(ServerWebExchangeUtils.GATEWAY_PREDICATE_MATCHED_PATH_ATTR)
+                .toString().replace("/" + SERVICE_NAME + "/{version:v[0-9]+.[0-9]+.[0-9]+}", ""));
 
         api = uri;
         String oriUrl = uri;
 
         if(map != null && !map.isEmpty() && map.size() > 1) {
             oriUrl = exchange.getAttribute(ServerWebExchangeUtils.GATEWAY_PREDICATE_MATCHED_PATH_ATTR)
-                    .toString().replace("/" + SERVICE_NAME + "/\\{version:v[0-9]+.[0-9]+.[0-9]+}", "");
+                    .toString().replace("/" + SERVICE_NAME + "/{version:v[0-9]+.[0-9]+.[0-9]+}/", "/");
         }
 
         requestType = Objects.requireNonNull(exchange.getRequest().getMethod()).toString().toLowerCase();
@@ -80,18 +80,6 @@ public class VersionGetGlobalFilter implements GlobalFilter, Ordered {
 
         return chain.filter(exchange.mutate().request(request).build());
 
-    }
-
-    private String originUrl(String url, Map<String, String> map) {
-        String res = url;
-        for(String key : map.keySet()) {
-            if("version".equals(key)) {
-                continue;
-            }
-            res = res.replace("/" + map.get(key).toString(),"/{" + key  + "}");
-        }
-        LOGGER.info("modified url is: " + res);
-        return res;
     }
 
     public String[] getVersionInterval(String url) {
