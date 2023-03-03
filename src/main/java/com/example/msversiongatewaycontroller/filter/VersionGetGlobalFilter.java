@@ -66,7 +66,7 @@ public class VersionGetGlobalFilter implements GlobalFilter, Ordered {
 
         if(map != null && !map.isEmpty() && map.size() > 1) {
             oriUrl = exchange.getAttribute(ServerWebExchangeUtils.GATEWAY_PREDICATE_MATCHED_PATH_ATTR)
-                    .toString().replace("/" + SERVICE_NAME + "/{version:v[0-9]+.[0-9]+.[0-9]+}/", "/");
+                    .toString().replace("/" + SERVICE_NAME + "/{version:v[0-9]+\\.[0-9]+\\.[0-9]+}/", "/");
         }
 
         requestType = Objects.requireNonNull(exchange.getRequest().getMethod()).toString().toLowerCase();

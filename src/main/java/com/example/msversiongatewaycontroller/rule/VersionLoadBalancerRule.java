@@ -1,14 +1,11 @@
 package com.example.msversiongatewaycontroller.rule;
 
-import com.alibaba.cloud.commons.lang.StringUtils;
 import com.alibaba.cloud.nacos.NacosDiscoveryProperties;
 import com.alibaba.cloud.nacos.balancer.NacosBalancer;
 import com.alibaba.cloud.nacos.discovery.NacosServiceDiscovery;
 import com.alibaba.nacos.api.exception.NacosException;
 import com.example.msversiongatewaycontroller.common.VersionStringOp;
-import com.example.msversiongatewaycontroller.filter.VersionGetGlobalFilter;
 import com.example.msversiongatewaycontroller.service.VersionMarkerService;
-import org.apache.hc.client5.http.fluent.Content;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.ObjectProvider;
@@ -29,12 +26,14 @@ import javax.annotation.Resource;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 import static com.example.msversiongatewaycontroller.filter.VersionGetGlobalFilter.*;
 
 
+/**
+ * @author pivot
+ */
 public class VersionLoadBalancerRule implements ReactorServiceInstanceLoadBalancer {
     private static final Logger LOGGER = LoggerFactory.getLogger(VersionLoadBalancerRule.class);
     @Resource
@@ -92,9 +91,7 @@ public class VersionLoadBalancerRule implements ReactorServiceInstanceLoadBalanc
         VersionStringOp stringOp = new VersionStringOp();
         List<ServiceInstance> instances1 = new ArrayList<>(instances);
         instances1.addAll(getVersionInstances());
-//        LOGGER.info("version interval left is " + intervals[0] + ", right is " + intervals[1]);
         List<ServiceInstance> sameVersionInstances = instances1.stream().filter(
-//                        x -> StringUtils.equals(x.getMetadata().get("version"), VERSION.replace("v", "")))
                     x -> stringOp.compareVersion(x.getMetadata().get("version"), intervals[1])
                             && stringOp.compareVersion(intervals[0], x.getMetadata().get("version"))
                 ).collect(Collectors.toList());
@@ -114,16 +111,13 @@ public class VersionLoadBalancerRule implements ReactorServiceInstanceLoadBalanc
         int max = Integer.parseInt(intervals[1].substring(0, intervals[1].indexOf('.')));
         List<ServiceInstance> lists = new ArrayList<>();
         for(int i = min; i <= max; ++i) {
-            if(i == Integer.parseInt(VERSION.substring(1, VERSION.indexOf('.'))))
+            if(i == Integer.parseInt(VERSION.substring(1, VERSION.indexOf('.')))) {
                 continue;
+            }
             String url = SERVICE_NAME +
                     "-v" +
                     i;
             List<ServiceInstance> list = serviceDiscovery.getInstances(url);
-
-//            System.out.println(list.get(0).getMetadata().toString());
-
-//            list.removeIf(instances::contains);
 
             lists.addAll(list);
 

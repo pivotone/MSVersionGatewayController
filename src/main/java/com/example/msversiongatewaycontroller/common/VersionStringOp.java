@@ -2,6 +2,9 @@ package com.example.msversiongatewaycontroller.common;
 
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * @author pivot
+ */
 public class VersionStringOp {
     public int[] stringVersionToIntArray(@NotNull String version) {
         String[] versions = version.split("\\.");

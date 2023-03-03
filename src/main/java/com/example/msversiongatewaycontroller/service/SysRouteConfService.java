@@ -39,8 +39,8 @@ public interface SysRouteConfService extends IService<SysRouteConf> {
 
     /**
      * delete a exist route configuration
-     * @param routeId need deleting route's id
+     * @param id need deleting db's id
      * @return 0 or 1
      */
-    Integer delete(int Id);
+    Integer delete(int id);
 }
