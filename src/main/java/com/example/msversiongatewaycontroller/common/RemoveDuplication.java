@@ -1,7 +1,6 @@
 package com.example.msversiongatewaycontroller.common;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -13,8 +12,7 @@ public class RemoveDuplication {
     public String removedResult(String duplication) {
         duplication = duplication.replace(" ", "");
         String[] strs = duplication.split(",");
-        Set<String> set = new HashSet<>();
-        set.addAll(Arrays.asList(strs).subList(0, strs.length - 1));
+        Set<String> set = new HashSet<>(Arrays.asList(strs).subList(0, strs.length - 1));
         StringBuilder sb = new StringBuilder();
         set.forEach(str -> {
             sb.append(str).append(", ");

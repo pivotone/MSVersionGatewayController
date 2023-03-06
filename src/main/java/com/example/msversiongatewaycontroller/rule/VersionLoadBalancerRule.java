@@ -4,6 +4,7 @@ import com.alibaba.cloud.nacos.NacosDiscoveryProperties;
 import com.alibaba.cloud.nacos.balancer.NacosBalancer;
 import com.alibaba.cloud.nacos.discovery.NacosServiceDiscovery;
 import com.alibaba.nacos.api.exception.NacosException;
+import com.alibaba.nacos.api.naming.pojo.Instance;
 import com.example.msversiongatewaycontroller.common.VersionStringOp;
 import com.example.msversiongatewaycontroller.service.VersionMarkerService;
 import org.slf4j.Logger;
@@ -25,7 +26,10 @@ import reactor.core.publisher.Mono;
 import javax.annotation.Resource;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 import static com.example.msversiongatewaycontroller.filter.VersionGetGlobalFilter.*;
@@ -99,11 +103,43 @@ public class VersionLoadBalancerRule implements ReactorServiceInstanceLoadBalanc
             LOGGER.warn("no instance find in this version");
             return new EmptyResponse();
         }
-        ServiceInstance instance = NacosBalancer.getHostByRandomWeight3(sameVersionInstances);
+        ServiceInstance instance = getHostByCalWeight(sameVersionInstances);
 
         LOGGER.info("selected instance is " + instance.getMetadata().get("version"));
 
         return new DefaultResponse(instance);
+    }
+
+    private ServiceInstance getHostByCalWeight(List<ServiceInstance> instances) {
+        Map<String, Integer> map = new HashMap<>(instances.size());
+        AtomicInteger sumOfAll = new AtomicInteger();
+        instances.forEach(x -> {
+            String version = x.getMetadata().get("version");
+            String[] versions = version.split("\\.");
+            int sum = Integer.parseInt(versions[0]) * 100 + Integer.parseInt(versions[1]) * 10 + Integer.parseInt(versions[2]);
+            sumOfAll.addAndGet(sum);
+            map.put(version, sum);
+        });
+        Map<String, Double> weightMap = new HashMap<>(instances.size());
+        map.forEach((k, v) -> {
+            double x = (double) v / sumOfAll.get();
+            weightMap.put(k, x);
+        });
+        Map<Instance, ServiceInstance> instanceMap = new HashMap<>();
+        List<Instance> nacosInstance = instances.stream().map(serviceInstance -> {
+            Map<String, String> metadata = serviceInstance.getMetadata();
+            Instance instance = new Instance();
+            instance.setIp(serviceInstance.getHost());
+            instance.setPort(serviceInstance.getPort());
+            instance.setWeight(Double.parseDouble(String.valueOf(weightMap.get(metadata.get("version")))));
+            LOGGER.info(String.valueOf(instance.getWeight()));
+            instance.setHealthy(Boolean.parseBoolean(metadata.get("nacos.healthy")));
+            instanceMap.put(instance, serviceInstance);
+            return instance;
+        }).collect(Collectors.toList());
+
+        Instance instance = NacosBalancer.getHostByRandomWeight2(nacosInstance);
+        return instanceMap.get(instance);
     }
 
     private List<ServiceInstance> getVersionInstances() throws IOException, NacosException {
