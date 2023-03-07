@@ -36,7 +36,11 @@ public class SysRouteConfServiceImpl extends ServiceImpl<SysRouteConfMapper, Sys
 
     @Override
     public Integer add(SysRouteConf routeConf) {
-        return routeConfMapper.insert(routeConf);
+        routeConfMapper.insert(routeConf);
+        SysRouteConf newConf = new SysRouteConf();
+        newConf.setRouteId(routeConf.getRouteId());
+        newConf = routeConfMapper.selectOne(new QueryWrapper<>(newConf));
+        return newConf.getId();
     }
 
     @Override

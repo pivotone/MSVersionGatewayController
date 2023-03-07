@@ -53,8 +53,7 @@ public class SysRouteConfController {
     public Mono<Result> addRouteConfs(@RequestBody SysRouteConf routeConf) {
         routeConf.setCreateTime(new Date());
         this.serviceHandler.saveRoute(routeConf);
-        this.routeConfService.add(routeConf);
-        return Mono.just(ResultUtils.success());
+        return Mono.just(ResultUtils.success(this.routeConfService.add(routeConf)));
     }
 
     @PutMapping(value = "/route",  consumes = MediaType.APPLICATION_JSON_VALUE)
