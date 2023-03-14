@@ -116,7 +116,7 @@ public class VersionLoadBalancerRule implements ReactorServiceInstanceLoadBalanc
         instances.forEach(x -> {
             String version = x.getMetadata().get("version");
             String[] versions = version.split("\\.");
-            int sum = Integer.parseInt(versions[0]) * 100 + Integer.parseInt(versions[1]) * 10 + Integer.parseInt(versions[2]);
+            int sum = Integer.parseInt(versions[0]) * 10 + Integer.parseInt(versions[1]) * 2 + Integer.parseInt(versions[2]);
             sumOfAll.addAndGet(sum);
             map.put(version, sum);
         });
