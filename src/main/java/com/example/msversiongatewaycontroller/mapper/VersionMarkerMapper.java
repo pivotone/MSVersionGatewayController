@@ -1,13 +1,10 @@
 package com.example.msversiongatewaycontroller.mapper;
 
-import com.example.msversiongatewaycontroller.entity.VersionInterval;
 import com.example.msversiongatewaycontroller.entity.VersionMarker;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
-import java.util.HashMap;
 import java.util.Map;
 
 /**

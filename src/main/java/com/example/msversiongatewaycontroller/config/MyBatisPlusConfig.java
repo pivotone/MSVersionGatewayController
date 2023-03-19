@@ -1,15 +1,11 @@
 package com.example.msversiongatewaycontroller.config;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.baomidou.mybatisplus.generator.AutoGenerator;
 import com.baomidou.mybatisplus.generator.FastAutoGenerator;
 import com.baomidou.mybatisplus.generator.config.*;
 import com.baomidou.mybatisplus.generator.engine.FreemarkerTemplateEngine;
-import com.baomidou.mybatisplus.generator.engine.VelocityTemplateEngine;
 
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
 
 public class MyBatisPlusConfig {
     public static void main(String[] args) {

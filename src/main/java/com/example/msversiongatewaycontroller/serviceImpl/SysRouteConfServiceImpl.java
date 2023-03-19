@@ -6,7 +6,6 @@ import com.example.msversiongatewaycontroller.mapper.SysRouteConfMapper;
 import com.example.msversiongatewaycontroller.service.SysRouteConfService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -23,7 +22,6 @@ import java.util.List;
  */
 @Service
 @AllArgsConstructor
-@Slf4j
 public class SysRouteConfServiceImpl extends ServiceImpl<SysRouteConfMapper, SysRouteConf> implements SysRouteConfService {
     @Resource
     private SysRouteConfMapper routeConfMapper;

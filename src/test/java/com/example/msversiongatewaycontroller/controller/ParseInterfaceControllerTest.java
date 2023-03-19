@@ -1,6 +1,5 @@
 package com.example.msversiongatewaycontroller.controller;
 
-import com.example.msversiongatewaycontroller.entity.MServiceInterface;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -10,7 +9,6 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Iterator;
 
-import static org.junit.jupiter.api.Assertions.*;
 
 class ParseInterfaceControllerTest {
 
@@ -29,7 +27,6 @@ class ParseInterfaceControllerTest {
 
         while(keys.hasNext()) {
             String path = keys.next();
-            JsonNode pathNode = paths.get(path);
             LOGGER.info("解析到的path路径为： " + path);
         }
     }

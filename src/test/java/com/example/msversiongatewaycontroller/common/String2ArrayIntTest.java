@@ -1,6 +1,5 @@
 package com.example.msversiongatewaycontroller.common;
 
-import com.alibaba.cloud.nacos.NacosDiscoveryProperties;
 import com.alibaba.cloud.nacos.discovery.NacosServiceDiscovery;
 import com.alibaba.nacos.api.exception.NacosException;
 import com.alibaba.nacos.api.naming.NamingFactory;
@@ -9,10 +8,8 @@ import com.alibaba.nacos.api.naming.pojo.Instance;
 import org.apache.hc.client5.http.fluent.Content;
 import org.apache.hc.client5.http.fluent.Request;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.cloud.client.ServiceInstance;
-import org.springframework.web.client.RestTemplate;
 
 import javax.annotation.Resource;
 
@@ -52,8 +49,6 @@ class String2ArrayIntTest {
 
         Content content = Request.get("http://39.104.112.98:8848/nacos/v1/ns/instance/list?serviceName=ts-travel-service-v1")
                 .execute().returnContent();
-
-        String instanceString = content.toString();
 
         String serverAddr = "39.104.112.98:8848";
         String namespace = "public";

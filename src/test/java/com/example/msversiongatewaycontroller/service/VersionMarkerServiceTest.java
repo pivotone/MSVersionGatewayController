@@ -1,6 +1,5 @@
 package com.example.msversiongatewaycontroller.service;
 
-import com.example.msversiongatewaycontroller.entity.VersionInterval;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,7 +10,6 @@ import javax.annotation.Resource;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 class VersionMarkerServiceTest {
