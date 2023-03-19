@@ -120,6 +120,8 @@ public class GatewayServiceHandler implements ApplicationEventPublisherAware, Co
             FilterDefinition filter = new FilterDefinition(routeConf.getFilters());
 
             routeDefinition.setFilters(Collections.singletonList(filter));
+        } else {
+            routeConf.setFilters(null);
         }
 
         routeDefinition.setOrder(routeConf.getOrders());

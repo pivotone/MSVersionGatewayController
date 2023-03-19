@@ -226,7 +226,7 @@ public class ParseInterfaceController {
             serviceHandler.saveRoute(sysRouteConf);
         } else {
             sysRouteConf.setId(temp.getId());
-            sysRouteConf.setPredicates("Path=" + new RemoveDuplication().removedResult(res + temp.getPredicates().substring(5)));
+            sysRouteConf.setPredicates("Path=" + new RemoveDuplication().mergePrefix(res + temp.getPredicates().substring(5)));
             routeConfService.update(sysRouteConf);
             serviceHandler.updateRoute(sysRouteConf);
         }

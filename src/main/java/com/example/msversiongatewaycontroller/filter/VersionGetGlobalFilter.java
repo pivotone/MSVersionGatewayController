@@ -28,8 +28,8 @@ import java.util.Objects;
 @Component
 public class VersionGetGlobalFilter implements GlobalFilter, Ordered {
     private static final Logger LOGGER = LoggerFactory.getLogger(VersionLoadBalancerRule.class);
-    public static String VERSION = "latest";
-    public static String SERVICE_NAME = "service";
+    public static volatile String VERSION = "latest";
+    public static volatile String SERVICE_NAME = "service";
     public static String api;
     public static String requestType;
     @Resource
@@ -67,6 +67,20 @@ public class VersionGetGlobalFilter implements GlobalFilter, Ordered {
         if(map != null && !map.isEmpty() && map.size() > 1) {
             oriUrl = exchange.getAttribute(ServerWebExchangeUtils.GATEWAY_PREDICATE_MATCHED_PATH_ATTR)
                     .toString().replace("/" + SERVICE_NAME + "/{version:v[0-9]+\\.[0-9]+\\.[0-9]+}/", "/");
+            int count = 0, pos = -1, temp = 0;
+            for(int i = 0; i < oriUrl.length(); ++i)
+                if(oriUrl.charAt(i) == '/')
+                    count++;
+            for(int i = 0; i < uri.length(); ++i) {
+                if(uri.charAt(i) == '/') {
+                    temp++;
+                    if(temp == count) {
+                        pos = i;
+                        break;
+                    }
+                }
+            }
+            oriUrl = oriUrl.substring(0, oriUrl.length() - 3) + (pos >= 0 ? uri.substring(pos) : "");
         }
 
         requestType = Objects.requireNonNull(exchange.getRequest().getMethod()).toString().toLowerCase();
